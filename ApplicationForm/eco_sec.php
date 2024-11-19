@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="checkbox" name="income[]" value="rentals" <?php echo (strpos($eco_data['source_of_income'], 'rentals') !== false) ? 'checked' : ''; ?>> 6. Rentals / Sharecrops<br>
                 <input type="checkbox" name="income[]" value="savings" <?php echo (strpos($eco_data['source_of_income'], 'savings') !== false) ? 'checked' : ''; ?>> 7. Savings<br>
                 <input type="checkbox" name="income[]" value="livestock" <?php echo (strpos($eco_data['source_of_income'], 'livestock') !== false) ? 'checked' : ''; ?>> 8. Livestock / orchard / farm<br>
-                <input type="checkbox" name="income[]" value="fishin" <?php echo (strpos($eco_data['source_of_income'], 'fishing') !== false) ? 'checked' : ''; ?>> 9. Fishing<br>
+                <input type="checkbox" name="income[]" value="fishing" <?php echo (strpos($eco_data['source_of_income'], 'fishing') !== false) ? 'checked' : ''; ?>> 9. Fishing<br>
                 <!-- Other Business field -->
                 <div>
                     <input type="text" class="form-control mt-2" name="other_business" placeholder="Other, specify" value="<?php echo htmlspecialchars($eco_data['other_business']); ?>">
