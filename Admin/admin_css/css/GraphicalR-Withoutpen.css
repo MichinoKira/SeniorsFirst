@@ -1,0 +1,91 @@
+
+.pension-report-section {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.report-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.report-table {
+    flex: 1;
+}
+
+.report-table h2 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.graph {
+    flex: 1;
+    position: relative;
+}
+
+.print-button {
+    position: absolute;
+    top: -10px;
+    right: 0;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.print-button:hover {
+    background-color: #0056b3;
+}
+
+.graph h2 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    margin-top: 40px;
+    font-weight: bold;
+    font-family: "Open Sans", sans-serif;
+}
+
+.bar-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 200px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.bar {
+    width: 15%;
+    background-color: #007BFF;
+    color: #fff;
+    text-align: center;
+    padding-top: 5px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}

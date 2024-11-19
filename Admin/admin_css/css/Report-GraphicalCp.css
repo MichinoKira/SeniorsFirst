@@ -1,0 +1,96 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Container Styling */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+}
+
+.report-section {
+    width: 90%;
+    max-width: 900px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff;
+    padding: 20px;
+}
+
+.report-container {
+    display: flex;
+    gap: 20px;
+}
+
+/* Table Styling */
+.report-table {
+    flex: 1;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.report-table h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #007bff;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* Graph Container Styling */
+.graph-container {
+    flex: 2;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.graph-container h2 {
+    margin-bottom: 10px;
+}
+
+canvas {
+    width: 100% !important;
+    height: 300px !important;
+}
+
+/* Button Styling */
+.print-button {
+    align-self: flex-end;
+    padding: 8px 15px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+}
+
+.print-button:hover {
+    background-color: #0056b3;
+}

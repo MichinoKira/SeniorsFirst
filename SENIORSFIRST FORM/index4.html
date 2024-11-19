@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+    <title>SeniorsFirst</title> 
+
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="form.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid my-custom-container mt-4">
+        <div class="mt-4">
+            <p class="bg-primary text-white p-2">IV. EDUCATION / HR PROFILE</p>
+        </div>
+        <form>
+            <div class="economic-profile">
+                <div class="form-group left">
+                    <label class="form-label"><strong>27. Highest Educational Attainment</strong></label>
+                    <label><input type="radio" name="education" value="Not Attended School"> Not Attended School</label>
+                    <label><input type="radio" name="education" value="Elementary Level"> Elementary Level</label>
+                    <label><input type="radio" name="education" value="Elementary Graduate"> Elementary Graduate</label>
+                    <label><input type="radio" name="education" value="Highschool Level"> Highschool Level</label>
+                    <label><input type="radio" name="education" value="Highschool Graduate"> Highschool Graduate</label>
+                    <label><input type="radio" name="education" value="Vocational"> Vocational</label>
+                    <label><input type="radio" name="education" value="College Level"> College Level</label>
+                    <label><input type="radio" name="education" value="College Graduate"> College Graduate</label>
+                    <label><input type="radio" name="education" value="Post Graduate"> Post Graduate</label>
+                    <input type="text" name="education_other" placeholder="Others, Specify" class="other-input">
+                </div>
+                <div class="form-group center">
+                    <label class="form-label"><strong>28. Specialization / Technical Skills</strong> <small>(Check all applicable)</small></label>
+                    <label><input type="checkbox"  class="checkbox5" name="skills[]" value="Medical"> Medical</label>
+                    <label><input type="checkbox"  class="checkbox5" name="skills[]" value="Dental"> Dental</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Fishing"> Fishing</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Engineering"> Engineering</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Barber"> Barber</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Evangelization"> Evangelization</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Millwright"> Millwright</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Teaching"> Teaching</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Counselling"> Counselling</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Cooking"> Cooking</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Carpenter"> Carpenter</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Mason"> Mason</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Tailor"> Tailor</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Legal Services"> Legal Services</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Farming"> Farming</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Arts"> Arts</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Plumber"> Plumber</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Shoemaker"> Shoemaker</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Chef/Cook"> Chef/Cook</label>
+                    <label><input type="checkbox" class="checkbox5" name="skills[]" value="Information Technology"> Information Technology</label>
+                    <input type="text" name="skills_other" placeholder="Others, Specify" class="other-input">
+                </div>
+                <div class="form-group right">
+                    <label class="form-label"><strong>29. Shared Skills</strong> <small>(Community Service)</small></label>
+                    <textarea name="shared_skills" class="shared-skills-placeholder" placeholder="Type skills here separated by comma"></textarea>
+
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><strong>30. Involvement in Community Activities</strong> <small>(Check all applicable)</small></label>
+                    <div class="options">
+                        <label><input type="checkbox" class="checkbox5" name="activities[]" value="Medical"> Medical</label>
+                        <label><input type="checkbox" class="checkbox5" name="activities[]" value="Resource Volunteer"> Resource Volunteer</label>
+                        <label><input type="checkbox" class="checkbox5" name="activities[]" value="Community Beautification"> Community Beautification</label>
+                        <label><input type="checkbox" class="checkbox5" name="activities[]" value="Community/Organization Leader"> Community/Organization Leader</label>
+                        <label><input type="checkbox" class="checkbox5" name="activities[]" value="Dental"> Dental</label>
+                        <label><input type="checkbox" class="checkbox5" name="activities[]" value="Friendly Visits"> Friendly Visits</label>
+                        <label><input type="checkbox" class="checkbox5" name="activities[]" value="Neighborhood Support Services"> Neighborhood Support Services</label>
+                        <label><input type="checkbox" class="checkbox5" name="activities[]" value="Legal Services"> Legal Services</label>
+                        <label><input type="checkbox" class="checkbox5" name="activities[]" value="Religious"> Religious</label>
+                        <label><input type="checkbox" class="checkbox5" name="activities[]" value="Counselling/Referral"> Counselling/Referral</label>
+                        <label><input type="checkbox" class="checkbox5" name="activities[]" value="Sponsorship"> Sponsorship</label>
+                        <input type="text" name="activities_other" placeholder="Others, Specify" class="other-input">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-next">Next</button>
+            </div>
+        </form>
+        <script src="js/jquery.min.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+    </div>
+</body>
+</html>
