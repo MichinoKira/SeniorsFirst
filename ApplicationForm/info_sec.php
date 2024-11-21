@@ -283,7 +283,7 @@ if ($recordExists) {
           </div>
           <div class=" col-md-2">
             <label for="OSCA">Osca Id</label>
-            <input type="text" id="oscaID" name="oscaID" class="form-control" value="<?php echo htmlspecialchars($info['oscaID'] ?? ''); ?>">
+            <input type="text" id="oscaID" name="oscaID" class="form-control" value="<?php echo htmlspecialchars($info['oscaID'] ?? ''); ?>" required>
           </div>
       </div>
 
