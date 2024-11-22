@@ -51,22 +51,67 @@ if ($stmt->rowCount() > 0) {
     die("User not found.");
 }
 
-// Function to check if profile is complete
-function isProfileComplete($profile) {
-    // List of required fields
-    $requiredFields = ['firstname', 'lastname', 'email', 'dob', 'gender', 'province', 'city', 'brgy', 'zone'];
+// Get the profile ID (from session or fetched data)
+$parent_id = $user_id;
+// Section completion statuses
+$infoSecComplete = isInfoSecComplete($pdo, $parent_id);
+$familySecComplete = isFamilySecComplete($pdo, $parent_id);
+$eduSecComplete = isEduSecComplete($pdo, $parent_id);
+$ecoSecComplete = isEcoSecComplete($pdo, $parent_id);
 
-    // Check each required field
-    foreach ($requiredFields as $field) {
-        if (empty($profile[$field])) {
-            return false;
-        }
-    }
-    return true;
+function isInfoSecComplete($pdo, $parent_id) {
+    $query = "SELECT firstname, lastname, oscaID FROM info_sec WHERE parent_id = ?";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$parent_id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Check required fields
+    return !empty($row['firstname']) && !empty($row['lastname']) && !empty($row['oscaID']);
 }
 
-// Check if profile is complete
-$profileComplete = isProfileComplete($profile);
+function isFamilySecComplete($pdo, $parent_id) {
+    $query = "SELECT spouse_lastname, spouse_firstname, spouse_middlename,
+                     father_lastname, father_firstname, father_middlename,
+                     mother_lastname, mother_firstname, mother_middlename  
+            FROM family_sec WHERE parent_id = ?";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$parent_id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Check required fields
+    return !empty($row['spouse_lastname']) && !empty($row['spouse_firstname']) && !empty($row['spouse_middlename'])
+        && !empty($row['father_lastname']) && !empty($row['father_firstname']) && !empty($row['father_middlename'])
+        && !empty($row['mother_lastname']) && !empty($row['mother_firstname']) && !empty($row['mother_middlename']); 
+}
+
+function isEduSecComplete($pdo, $parent_id) {
+    $query = "SELECT education FROM edu_sec WHERE parent_id = ?";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$parent_id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Check required fields
+    return !empty($row['education']);
+}
+
+function isEcoSecComplete($pdo, $parent_id) {
+    $query = "SELECT income_sources, income_range FROM eco_sec WHERE parent_id = ?";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$parent_id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Check required fields
+    return !empty($row['income_sources']) && !empty($row['income_range']);
+}
+
+
+$applicationComplete = isApplicationComplete($pdo, $parent_id);
+function isApplicationComplete($pdo, $parent_id) {
+    return isInfoSecComplete($pdo, $parent_id) &&
+           isFamilySecComplete($pdo, $parent_id) &&
+           isEduSecComplete($pdo, $parent_id) &&
+           isEcoSecComplete($pdo, $parent_id);
+}
 
 ?>
 
@@ -79,6 +124,29 @@ $profileComplete = isProfileComplete($profile);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Welcome - SeniorsFirst</title>
 </head>
+<style>
+
+.incomplete {
+    color: red;
+    font-weight: bold;
+}
+
+.status-message {
+    font-size: 1em;
+    color: blue;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.warning{
+    font-size: 1em;
+    color: black;
+    text-align: center;
+    margin-top: 15px;
+}
+
+</style>
+
 <body>
     <div id="main">
         <button class="nav-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
@@ -116,25 +184,30 @@ $profileComplete = isProfileComplete($profile);
                 <h4>Application Progress</h4>
                 <div class="progress-item">
                     <p>I. Identifying Information:</p>
-                    <p class="completed">Completed</p>
+                    <p class="<?php echo $infoSecComplete ? 'completed' : 'incomplete'; ?>" style="color:<?php echo $familySecComplete ? 'green' : 'red'; ?>">
+                        <?php echo $infoSecComplete ? 'Complete' : 'Incomplete'; ?>
                 </div>
                 <div class="progress-item">
                     <p>II. Family Composition:</p>
-                    <p class="status">In Progress</p>
+                    <p class="<?php echo $familySecComplete ? 'completed' : 'incomplete'; ?>" style="color:<?php echo $familySecComplete ? 'green' : 'red'; ?>">
+                        <?php echo $familySecComplete ? 'Complete' : 'Incomplete'; ?>
                 </div>
                 <div class="progress-item">
                     <p>IV. Education / HR Profile:</p>
-                    <p class="status">In Progress</p>
+                    <p class="<?php echo $eduSecComplete ? 'completed' : 'incomplete'; ?>" style="color:<?php echo $familySecComplete ? 'green' : 'red'; ?>">
+                        <?php echo $eduSecComplete ? 'Complete' : 'Incomplete'; ?>
                 </div>
                 <div class="progress-item">
                     <p>V. Economic Profile:</p>
-                    <p class="status">In Progress</p>
+                    <p class="<?php echo $ecoSecComplete ? 'completed' : 'incomplete'; ?>" style="color:<?php echo $familySecComplete ? 'green' : 'red'; ?>">
+                        <?php echo $ecoSecComplete ? 'Complete' : 'Incomplete'; ?>
                 </div>
             </div>
-            <?php if ($profileComplete): ?>
-                <a href="../ApplicationForm/info_sec.php" class="submit-btn">Submit Application</a>
+            <?php if ($applicationComplete): ?>
+                <p class="status-message">Please wait for the status to be approved.</p>
             <?php else: ?>
-                <p class="warning">Please complete your profile before submitting the application.</p>
+                <a href="../ApplicationForm/info_sec.php" class="submit-btn">Submit Application</a>
+                <p class="warning">Please complete your profile before submitting an application.</p>
             <?php endif; ?>
         </div>
     </div>
