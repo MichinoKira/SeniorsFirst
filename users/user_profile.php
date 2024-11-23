@@ -17,7 +17,7 @@ if ($stmt->rowCount() > 0) {
     $user_id = $user['user_id']; // Fetch the user_id from the users table
 
     // Fetch profile data using the user_id (as profile_id)
-    $profileQuery = "SELECT * FROM profile WHERE profile_id = ?";
+    $profileQuery = "SELECT * FROM user_profile WHERE profile_id = ?";
     $profileStmt = $pdo->prepare($profileQuery);
     $profileStmt->execute([$user_id]);
 
@@ -67,18 +67,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if the profile already exists
     if ($profileStmt->rowCount() > 0) {
         // Update the existing profile record
-        $updateQuery = "UPDATE profile SET firstname = ?, middlename = ?, lastname = ?, extension = ?, email = ?, age = ?, dob = ?, gender = ?, region = ?, province = ?, city = ?, brgy = ?, zone = ? WHERE profile_id = ?";
+        $updateQuery = "UPDATE user_profile SET firstname = ?, middlename = ?, lastname = ?, extension = ?, email = ?, age = ?, dob = ?, gender = ?, region = ?, province = ?, city = ?, brgy = ?, zone = ? WHERE profile_id = ?";
         $profileStmt = $pdo->prepare($updateQuery);
         $profileStmt->execute([$firstname, $middlename, $lastname, $extension, $email, $age, $dob, $gender, $region, $province, $city, $brgy, $zone, $user_id]);
     } else {
         // Insert a new profile record
-        $insertQuery = "INSERT INTO profile (parent_id, firstname, middlename, lastname, extension, email, age, dob, gender, region, province, city, brgy, zone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO user_profile (parent_id, firstname, middlename, lastname, extension, email, age, dob, gender, region, province, city, brgy, zone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $profileStmt = $pdo->prepare($insertQuery);
         $profileStmt->execute([$user_id, $firstname, $middlename, $lastname, $extension, $email, $age, $dob, $gender, $region, $province, $city, $brgy, $zone]);
     }
 
     // Redirect to avoid form resubmission on refresh
-    header("Location: profile.php?updated=true");
+    header("Location: user_profile.php?updated=true");
     exit;
 }
 
@@ -114,8 +114,8 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
         <?php endif; ?>
 
         <?php if ($isEdit): ?>
-            <div class="back-button" onclick="window.location.href='profile.php';">&#x2190;</div>
-            <form class="profile-form" method="POST" action="profile.php" enctype="multipart/form-data">
+            <div class="back-button" onclick="window.location.href='user_profile.php';">&#x2190;</div>
+            <form class="profile-form" method="POST" action="user_profile.php" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="name">First Name</label>
                     <input type="text" id="firstname" name="firstname" value="<?php echo htmlspecialchars($profile['firstname'] ?? ''); ?>" required>
@@ -181,7 +181,7 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
         <p><strong>Date of Birth:</strong> <?php echo htmlspecialchars($profile['dob'] ?? ''); ?></p>
         <p><strong>Gender:</strong> <?php echo htmlspecialchars($profile['gender'] ?? ''); ?></p>
         <p><strong>Address:</strong> <?php echo htmlspecialchars(($profile['province'] ?? '') . ' ' . ($profile['city'] ?? '') . ' ' . ($profile['brgy'] ?? '') . ' ' . ($profile['zone'] ?? '')); ?></p>
-        <a href="../users/profile.php?edit=true" class="edit-button">Edit Profile</a>
+        <a href="../users/user_profile.php?edit=true" class="edit-button">Edit Profile</a>
         <?php endif; ?>
     </div>
 </body>

@@ -77,6 +77,32 @@ try {
  
 </head>
 
+<style>
+  /* Default dropdown color */
+.status-dropdown {
+    color: white; /* Black text by default */
+    text-align: center;
+    background-color: white;
+    border-radius: 30px;
+    font-size: 13px;
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+/* Specific colors for each status */
+.status-dropdown.status-pending {
+    background-color: gray;
+}
+
+.status-dropdown.status-approved {
+    background-color: green;
+}
+
+.status-dropdown.status-denied {
+    background-color: red;
+}
+</style>
+
 <body>
 
   <!-- ======= Header ======= -->
@@ -316,13 +342,41 @@ try {
                 <th>Address</th>
                 <th>Birthdate</th>
                 <th>Gender</th>
-                <th>Status</th>
                 <th>Approval</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
+        <?php
+          // Query to fetch data
+          $stmt = $pdo->query("SELECT bhw.*, user_profile.*, user_profile.parent_id, user_profile.status FROM bhw 
+                              INNER JOIN user_profile ON bhw.purok_name = user_profile.zone");
+          $count = 1;
 
+          while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+              $status = $row['status']; // Status from the profile table
+
+              echo "<tr>";
+              echo "<td>" . $count++ . "</td>";
+              echo "<td>" . htmlspecialchars($row['firstname'] . " " . $row['lastname']) . "</td>";
+              echo "<td>" . htmlspecialchars($row['zone'] . " Brgy. " . $row['brgy'] . " " . $row['city']) . ", " . $row['province'] . "</td>";
+              echo "<td>" . htmlspecialchars($row['dob']) . "</td>";
+              echo "<td>" . htmlspecialchars($row['gender']) . "</td>";
+              echo "<td class='status-cell'>
+                      <select class='form-select status-dropdown' data-parent-id='" . $row['parent_id'] . "'>
+                          <option value='pending' " . ($status === 'pending' ? 'selected' : '') . ">Pending</option>
+                          <option value='approved' " . ($status === 'approved' ? 'selected' : '') . ">Approved</option>
+                          <option value='denied' " . ($status === 'denied' ? 'selected' : '') . ">Denied</option>
+                      </select>
+                    </td>";
+              echo "<td class='action-column'>
+                    <a href='archive.php?bhw_id=" . $row['bhw_id'] . "' class='btn btn-outline-secondary' title='Archive'>
+                        <i class='fas fa-archive'></i>
+                    </a>
+                    </td>";
+              echo "</tr>";
+          }
+        ?>
         </tbody>
     </table>
 
@@ -354,6 +408,56 @@ try {
 
     <!-- JavaScript to Manage Popup and Save Logic -->
     <script>
+
+document.addEventListener("DOMContentLoaded", function () {
+    const statusDropdowns = document.querySelectorAll(".status-dropdown");
+
+    function updateDropdownColor(dropdown) {
+        const value = dropdown.value;
+        dropdown.classList.remove("status-pending", "status-approved", "status-denied");
+
+        if (value === "pending") {
+            dropdown.classList.add("status-pending");
+        } else if (value === "approved") {
+            dropdown.classList.add("status-approved");
+        } else if (value === "denied") {
+            dropdown.classList.add("status-denied");
+        }
+    }
+
+    // Initialize colors for existing dropdowns
+    statusDropdowns.forEach(dropdown => {
+        updateDropdownColor(dropdown);
+
+        dropdown.addEventListener("change", function () {
+            updateDropdownColor(this);
+
+            const parentId = this.getAttribute("data-parent-id");
+            const newStatus = this.value;
+
+            // AJAX request to update status in the database
+            fetch(`update_status.php`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ parent_id: parentId, status: newStatus }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Status updated successfully!");
+                } else {
+                    alert("Failed to update status. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error updating status:", error);
+            });
+        });
+    });
+});
+
 
 
     </script>

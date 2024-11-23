@@ -278,7 +278,7 @@ require_once '../db/db_config.php';
                 <tbody>
                 <?php
                     // Query to fetch user data
-                    $stmt = $pdo->query("SELECT * FROM profile");
+                    $stmt = $pdo->query("SELECT * FROM user_profile");
                     $count = 1;
                     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                         echo "<tr>";
