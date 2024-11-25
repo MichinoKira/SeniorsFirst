@@ -352,7 +352,7 @@ try {
           $stmt = $pdo->query("SELECT * FROM bhw 
 INNER JOIN bhw_profile ON bhw.bhw_id = bhw_profile.parent_id 
 INNER JOIN user_profile ON bhw.purok_name = user_profile.purok_name 
-WHERE bhw.purok_name AND bhw_profile.parent_id = user_profile.purok_name
+WHERE bhw.purok_name = user_profile.purok_name
             ");
           $count = 1;
 
