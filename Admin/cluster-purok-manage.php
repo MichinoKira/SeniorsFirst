@@ -11,48 +11,59 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'brgy') {
 // Include the database configuration file
 require_once '../db/db_config.php';
 
-// Check if the request method is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  // Retrieve input values safely
-  $purok_id = $_POST['purok_id'] ?? null;
+  $purok_id = $_POST['purok_id'] ?? null; // Existing purok_id for update
   $purok_name = $_POST['purok_name'] ?? null;
   $contact_person = $_POST['contact_person'] ?? null;
   $contact_number = $_POST['contact_number'] ?? null;
   $email_address = $_POST['email_address'] ?? null;
 
-  // Validate required fields
   if ($purok_name && $contact_person && $contact_number && $email_address) {
-      // Check for existing entries with the same data
-      $stmt = $pdo->prepare("SELECT * FROM puroks WHERE (purok_name = ? OR contact_person = ? OR contact_number = ? OR email_address = ?) AND purok_id != ?");
-      $stmt->execute([$purok_name, $contact_person, $contact_number, $email_address, $purok_id]);
-      $existing_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      try {
+          // Begin a transaction
+          $pdo->beginTransaction();
 
-      if (!empty($existing_data)) {
-          echo "Error: A purok with the same details already exists. Please enter different values.";
-      } else {
           if ($purok_id) {
-              // Update existing purok
-              $stmt = $pdo->prepare("UPDATE puroks SET purok_name=?, contact_person=?, contact_number=?, email_address=? WHERE purok_id=?");
-              if ($stmt->execute([$purok_name, $contact_person, $contact_number, $email_address, $purok_id])) {
-                  echo "<script>alert('Purok Updated Successfully!.');</script>";
-              } else {
-                  echo "Error: Unable to update purok. " . $stmt->errorInfo()[2]; // Show SQL error for debugging
-              }
+              // Update existing record
+              $stmt = $pdo->prepare("UPDATE puroks 
+                  SET purok_name = ?, contact_person = ?, contact_number = ?, email_address = ?
+                  WHERE purok_id = ?
+              ");
+              $stmt->execute([$purok_name, $contact_person, $contact_number, $email_address, $purok_id]);
+
+              // Update parent_id for the updated record
+              $updateStmt = $pdo->prepare("UPDATE puroks SET parent_id = ? WHERE purok_id = ?");
+              $updateStmt->execute([$purok_id, $purok_id]);
           } else {
-              // Insert new purok
-              $stmt = $pdo->prepare("INSERT INTO puroks (purok_name, contact_person, contact_number, email_address) VALUES (?, ?, ?, ?)");
-              if ($stmt->execute([$purok_name, $contact_person, $contact_number, $email_address])) {
-                  echo "<script>alert('Purok Added Successfully!.');</script>";
-              } else {
-                  echo "Error: Unable to add purok. " . $stmt->errorInfo()[2]; // Show SQL error for debugging
-              }
+              // Insert new record
+              $stmt = $pdo->prepare("INSERT INTO puroks (purok_name, contact_person, contact_number, email_address) 
+                  VALUES (?, ?, ?, ?)
+              ");
+              $stmt->execute([$purok_name, $contact_person, $contact_number, $email_address]);
+
+              // Get the last inserted purok_id
+              $new_purok_id = $pdo->lastInsertId();
+
+              // Update parent_id for the new record
+              $updateStmt = $pdo->prepare("UPDATE puroks SET parent_id = ? WHERE purok_id = ?");
+              $updateStmt->execute([$new_purok_id, $new_purok_id]);
           }
+
+          // Commit the transaction
+          $pdo->commit();
+
+          $action = $purok_id ? 'updated' : 'added';
+          echo "<script>alert('Purok $action successfully!');</script>";
+      } catch (Exception $e) {
+          // Rollback if there's an error
+          $pdo->rollBack();
+          die("Error: " . $e->getMessage());
       }
   } else {
       echo "Error: Please provide all required fields.";
   }
 } else {
-  echo "Error: This page should be accessed via POST.";
+  echo "Invalid request method.";
 }
 
 

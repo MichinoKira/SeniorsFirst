@@ -39,7 +39,7 @@ if ($profileStmt->rowCount() > 0) {
         'province' => '',
         'city' => '',
         'brgy' => '',
-        'zone' => ''
+        'purok_name' => ''
     ];
 }
 } else {
@@ -62,19 +62,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $province = $_POST['province'] ?? '';
     $city = $_POST['city'] ?? '';
     $brgy = $_POST['brgy'] ?? '';
-    $zone = $_POST['zone'] ?? '';
+    $zone = $_POST['purok_name'] ?? '';
     
     // Check if the profile already exists
     if ($profileStmt->rowCount() > 0) {
         // Update the existing profile record
-        $updateQuery = "UPDATE user_profile SET firstname = ?, middlename = ?, lastname = ?, extension = ?, email = ?, age = ?, dob = ?, gender = ?, region = ?, province = ?, city = ?, brgy = ?, zone = ? WHERE profile_id = ?";
+        $updateQuery = "UPDATE user_profile SET firstname = ?, middlename = ?, lastname = ?, extension = ?, email = ?, age = ?, dob = ?, gender = ?, region = ?, province = ?, city = ?, brgy = ?, purok_name = ? WHERE profile_id = ?";
         $profileStmt = $pdo->prepare($updateQuery);
-        $profileStmt->execute([$firstname, $middlename, $lastname, $extension, $email, $age, $dob, $gender, $region, $province, $city, $brgy, $zone, $user_id]);
+        $profileStmt->execute([$firstname, $middlename, $lastname, $extension, $email, $age, $dob, $gender, $region, $province, $city, $brgy, $purok_name, $user_id]);
     } else {
         // Insert a new profile record
-        $insertQuery = "INSERT INTO user_profile (parent_id, firstname, middlename, lastname, extension, email, age, dob, gender, region, province, city, brgy, zone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO user_profile (parent_id, firstname, middlename, lastname, extension, email, age, dob, gender, region, province, city, brgy, purok_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $profileStmt = $pdo->prepare($insertQuery);
-        $profileStmt->execute([$user_id, $firstname, $middlename, $lastname, $extension, $email, $age, $dob, $gender, $region, $province, $city, $brgy, $zone]);
+        $profileStmt->execute([$user_id, $firstname, $middlename, $lastname, $extension, $email, $age, $dob, $gender, $region, $province, $city, $brgy, $purok_name]);
     }
 
     // Redirect to avoid form resubmission on refresh
@@ -170,7 +170,7 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
                 </div>
                 <div class="form-group">
                     <label for="address">Zone/Purok</label>
-                    <input type="text" id="zone" name="zone" value="<?php echo htmlspecialchars($profile['zone'] ?? ''); ?>" required>
+                    <input type="text" id="purok_name" name="purok_name" value="<?php echo htmlspecialchars($profile['purok_name'] ?? ''); ?>" required>
                 </div>
                 <button type="submit" class="edit-button">Save Profile</button>
             </form>
@@ -180,7 +180,7 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
         <p><strong>Age:</strong> <?php echo htmlspecialchars($profile['age'] ?? ''); ?></p>
         <p><strong>Date of Birth:</strong> <?php echo htmlspecialchars($profile['dob'] ?? ''); ?></p>
         <p><strong>Gender:</strong> <?php echo htmlspecialchars($profile['gender'] ?? ''); ?></p>
-        <p><strong>Address:</strong> <?php echo htmlspecialchars(($profile['province'] ?? '') . ' ' . ($profile['city'] ?? '') . ' ' . ($profile['brgy'] ?? '') . ' ' . ($profile['zone'] ?? '')); ?></p>
+        <p><strong>Address:</strong> <?php echo htmlspecialchars(($profile['province'] ?? '') . ' ' . ($profile['city'] ?? '') . ' ' . ($profile['brgy'] ?? '') . ' ' . ($profile['purok_name'] ?? '')); ?></p>
         <a href="../users/user_profile.php?edit=true" class="edit-button">Edit Profile</a>
         <?php endif; ?>
     </div>

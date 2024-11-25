@@ -349,8 +349,11 @@ try {
         <tbody>
         <?php
           // Query to fetch data
-          $stmt = $pdo->query("SELECT bhw.*, user_profile.*, user_profile.parent_id, user_profile.status FROM bhw 
-                              INNER JOIN user_profile ON bhw.purok_name = user_profile.zone");
+          $stmt = $pdo->query("SELECT * FROM bhw 
+INNER JOIN bhw_profile ON bhw.bhw_id = bhw_profile.parent_id 
+INNER JOIN user_profile ON bhw.purok_name = user_profile.purok_name 
+WHERE bhw.purok_name AND bhw_profile.parent_id = user_profile.purok_name
+            ");
           $count = 1;
 
           while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -359,7 +362,7 @@ try {
               echo "<tr>";
               echo "<td>" . $count++ . "</td>";
               echo "<td>" . htmlspecialchars($row['firstname'] . " " . $row['lastname']) . "</td>";
-              echo "<td>" . htmlspecialchars($row['zone'] . " Brgy. " . $row['brgy'] . " " . $row['city']) . ", " . $row['province'] . "</td>";
+              echo "<td>" . htmlspecialchars($row['purok_name'] . " Brgy. " . $row['brgy'] . " " . $row['city']) . ", " . $row['province'] . "</td>";
               echo "<td>" . htmlspecialchars($row['dob']) . "</td>";
               echo "<td>" . htmlspecialchars($row['gender']) . "</td>";
               echo "<td class='status-cell'>

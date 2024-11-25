@@ -41,7 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $purokName = $purok['purok_name'];
 
           // Prepare SQL statement to insert BHW account
-          $stmt = $pdo->prepare("INSERT INTO BHW (purok_name, fullname, contact_number, username, password, role, created_at) VALUES (:purokName, :fullname, :contactNumber, :username, :password, 'bhw', NOW())");
+          $stmt = $pdo->prepare("INSERT INTO BHW (purok_name, fullname, contact_number, username, password, role, created_at) 
+          VALUES (:purokName, :fullname, :contactNumber, :username, :password, 'bhw', NOW())");
 
           // Bind parameters
           $stmt->bindParam(':purokName', $purokName);
@@ -52,12 +53,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
           // Execute the statement
           if ($stmt->execute()) {
-              echo "<script>alert('BHW account successfully added!');</script>";
+              // Fetch the last inserted bhw_id
+              $bhwId = $pdo->lastInsertId();
+
+              // Now update the same record to set the parent_id as bhw_id
+              $stmt = $pdo->prepare("UPDATE BHW SET parent_id = :parentId WHERE bhw_id = :bhwId");
+              $stmt->bindParam(':parentId', $bhwId);
+              $stmt->bindParam(':bhwId', $bhwId);
+
+              // Execute the update
+              if ($stmt->execute()) {
+                  echo "<script>alert('BHW account successfully added!');</script>";
+              } else {
+                  echo "<script>alert('Error updating.');</script>";
+              }
           } else {
               echo "<script>alert('Error adding BHW account.');</script>";
           }
       } else {
-          echo "<script>alert('Invalid Purok ID.');</script>";
+          echo "<script>alert('Invalid Purok Name.');</script>";
       }
   }
 }
@@ -422,7 +436,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       <label class="form-labelBHWuser" for="clusterNameBHWuser">Cluster Name</label>
                       <div class="input-group">
                           <select id="purok_select" name="purok_name" class="form-inputBHWuser input-extendedBHWuser" onchange="handleClusterChange()">
-                              <option value="">Select a cluster/Purok</option>
+                              <option  value="">Select a cluster/Purok</option>
                               <?php foreach ($puroks as $purok): ?>
                                 <option value="<?= $purok['purok_id']; ?>"><?= htmlspecialchars($purok['purok_name']); ?></option>
                             <?php endforeach; ?>

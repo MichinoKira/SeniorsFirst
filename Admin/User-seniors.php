@@ -284,7 +284,7 @@ require_once '../db/db_config.php';
                         echo "<tr>";
                         echo "<td>" . $count++ . "</td>";
                         echo "<td>" . htmlspecialchars($row['firstname'] . " " . $row['lastname']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['zone'] . " Brgy. " . $row['brgy'] . " " . $row['city']) . ", " . $row['province']. "</td>";
+                        echo "<td>" . htmlspecialchars($row['purok_name'] . " Brgy. " . $row['brgy'] . " " . $row['city']) . ", " . $row['province']. "</td>";
                         echo "<td>" . htmlspecialchars($row['age']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['dob']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['gender']) . "</td>";
