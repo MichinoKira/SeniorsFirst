@@ -468,7 +468,7 @@ select.status option[value="Denied"] {
                 </select>
               </td>
               <td class='action-column'>
-                <a href="../ApplicationForm/applicationform.php?view=<?php echo $user['profile_id']; ?>" class="btn btn-primary">
+                <a href="../ApplicationForm/applicationform.php?profile_id=<?php echo $user['profile_id']; ?>" class="btn btn-primary">
                     <i class='fas fa-eye'></i>
                 </a>
               </td>

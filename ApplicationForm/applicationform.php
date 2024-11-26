@@ -6,41 +6,47 @@ session_start();
 // Include the database configuration file
 require_once '../db/db_config.php';
 
-// Check if the user is logged in and has the 'brgy' role
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'bhw') {
-  header("Location: login.php"); // Redirect to login if not authorized
-  exit();
+$profile_id = isset($_GET['profile_id']) ? $_GET['profile_id'] : null;
+
+if (!$profile_id) {
+    die("No profile selected.");
 }
 
-// Check if `profile_id` is provided in the URL
-if (isset($_GET['profile_id'])) {
-    $profile_id = $_GET['profile_id'];
+$query = "SELECT * FROM user_profile WHERE profile_id = ?";
+$stmt = $pdo->prepare($query);
+$stmt->execute([$profile_id]);
 
-    // Prepare the query to fetch the user's data
-    $stmt = $pdo->prepare("SELECT * FROM profile WHERE profile_id = :profile_id");
-    $stmt->execute(['profile_id' => $profile_id]);
-
-    // Fetch the data
-    $row = $stmt->fetch();
-
-    try {
-      // Fetch records based on parent_id
-      $query = "SELECT * FROM info_sec WHERE parent_id = :parent_id";
-      $stmt = $pdo->prepare($query);
-      $stmt->bindParam(':parent_id', $parent_id, PDO::PARAM_INT);
-      $stmt->execute();
-  
-      $info_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  
-      if (empty($info_data)) {
-          echo "No data found for the given Parent ID.";
-          exit;
-      }
-  } catch (PDOException $e) {
-      echo "Error: " . $e->getMessage();
-      exit;
-  }
+if ($stmt->rowCount() > 0) {
+    $data = $stmt->fetch(PDO::FETCH_ASSOC);
+} else {
+    die("No profile found with this ID.");
 }
+
+$profileQuery = "SELECT * FROM user_profile WHERE profile_id = ?";
+$profileStmt = $pdo->prepare($profileQuery);
+$profileStmt->execute([$profile_id]);
+$profile = $profileStmt->fetch(PDO::FETCH_ASSOC);
+
+$infoQuery = "SELECT * FROM info_sec WHERE parent_id = ?";
+$infoStmt = $pdo->prepare($infoQuery);
+$infoStmt->execute([$profile_id]);
+$info = $infoStmt->fetch(PDO::FETCH_ASSOC);
+
+$familyQuery = "SELECT * FROM family_sec WHERE parent_id = ?";
+$familyStmt = $pdo->prepare($familyQuery);
+$familyStmt->execute([$profile_id]);
+$family = $familyStmt->fetch(PDO::FETCH_ASSOC);
+
+$eduQuery = "SELECT * FROM edu_sec WHERE parent_id = ?";
+$eduStmt = $pdo->prepare($eduQuery);
+$eduStmt->execute([$profile_id]);
+$education = $eduStmt->fetch(PDO::FETCH_ASSOC);
+
+$ecoQuery = "SELECT * FROM eco_sec WHERE parent_id = ?";
+$ecoStmt = $pdo->prepare($ecoQuery);
+$ecoStmt->execute([$profile_id]);
+$economic = $ecoStmt->fetch(PDO::FETCH_ASSOC);
+
 ?>
 
 <!doctype html>
@@ -90,24 +96,22 @@ if (isset($_GET['profile_id'])) {
       
   
     <form>
-    <?php if (isset($info_data) && !empty($info_data)): ?>
-      <?php foreach ($info_data as $row): ?>
       <div class="form-row">
-          <div class="form-group col-md-3">
+          <div class="form-group col-md-2">
               <label for="lastname">Lastname (Apelyido) *</label>
-              <input type="text" class="form-control" id="lastname" name="lastname" value="<?php echo htmlspecialchars($row[';astname']); ?>" required>
+              <input type="text" class="form-control" id="lastname" name="lastname" value="<?php echo htmlspecialchars($profile['lastname'] ?? ''); ?>">
           </div>
-          <div class="form-group col-md-3">
+          <div class="form-group col-md-2">
               <label for="firstname">Firstname (Pangalan) *</label>
-              <input type="text" class="form-control" id="firstname" name="firstname" value="<?php echo htmlspecialchars($row['firstname']); ?>" required>
+              <input type="text" class="form-control" id="firstname" name="firstname" value="<?php echo htmlspecialchars($profile['firstname'] ?? ''); ?>">
           </div>
           <div class="form-group col-md-3">
               <label for="middlename">Middlename (Gitnang Pangalan) *</label>
-              <input type="text" class="form-control" id="middlename" name="middlename" value="<?php echo htmlspecialchars($row['middlename']); ?>" required>
+              <input type="text" class="form-control" id="middlename" name="middlename" value="<?php echo htmlspecialchars($profile['middlename'] ?? ''); ?>">
           </div>
-          <div class="form-group col-md-1">
+          <div class="form-group col-md-2">
               <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="<?php echo htmlspecialchars($row['extension']); ?>" id="extensionCheckbox">
+                  <input class="form-check-input" type="checkbox" value="" id="extensionCheckbox">
                   <label class="form-check-label" for="extensionCheckbox"  style="font-size: 10px;">
                       Check if the registrant has a name extension
                   </label>
@@ -129,19 +133,19 @@ if (isset($_GET['profile_id'])) {
     <div class="form-row">
         <div class="form-group col-md-3">
             <label for="region">Region *</label>
-            <input type="text" class="form-control" id="regions" name="region" value="<?php echo htmlspecialchars($profile['region'] ?? ''); ?>"  required>
+            <input type="text" class="form-control" id="regions" name="region" value="<?php echo htmlspecialchars($profile['region'] ?? ''); ?>">
         </div>
         <div class="form-group col-md-3">
             <label for="province">Province *</label>
-            <input type="text" class="form-control" id="provinces" name="province" value="<?php echo htmlspecialchars($profile['province'] ?? ''); ?>" required>
+            <input type="text" class="form-control" id="provinces" name="province" value="<?php echo htmlspecialchars($profile['province'] ?? ''); ?>">
         </div>
         <div class="form-group col-md-3">
             <label for="city">City *</label>
-            <input type="text" class="form-control" id="cities" name="city" value="<?php echo htmlspecialchars($profile['city'] ?? ''); ?>" required>
+            <input type="text" class="form-control" id="cities" name="city" value="<?php echo htmlspecialchars($profile['city'] ?? ''); ?>">
         </div>
         <div class="form-group col-md-3">
             <label for="barangay">Barangay *</label>
-            <input type="text" class="form-control" id="brgy" name="brgy" value="<?php echo htmlspecialchars($profile['brgy'] ?? ''); ?>"  required>
+            <input type="text" class="form-control" id="brgy" name="brgy" value="<?php echo htmlspecialchars($profile['brgy'] ?? ''); ?>">
         </div>
         <div class="col-md-12 mt-4 mb-3 custom-birthdate-text">
             <h6><b>3. Bith Date</b> <scan>- Indicate your birth date correctly</scan></h6>
@@ -149,45 +153,43 @@ if (isset($_GET['profile_id'])) {
             </div>
         <div class="form-group col-md-2">
             <label for="Month">Month *</label>
-            <input type="number" class="form-control" id="month" name="month" required min="1" max="12">
+            <input type="number" class="form-control" id="month" name="month"  value="<?php echo htmlspecialchars($info['month'] ?? ''); ?>">
         </div>
         <div class="form-group col-md-2">
           <label for="birthDay">Day *</label>
-          <input type="number" class="form-control" id="day" name="day" required min="1" max="31">
+          <input type="number" class="form-control" id="day" name="day"  value="<?php echo htmlspecialchars($info['day'] ?? ''); ?>">
       </div>
       <div class="form-group col-md-2">
           <label for="birthYear">Year *</label>
-          <input type="number" class="form-control" id="year" name="year" required>
+          <input type="number" class="form-control" id="year" name="year" value="<?php echo htmlspecialchars($info['year'] ?? ''); ?>">
       </div>
       </div>
   </div>
 
  
   <div class="row mb-3">
-      <div class="col-md-6">
+      <div class="col-md-4">
           <label for="birthPlace" class="form-label">Birth Place</label>
-          <input type="text" id="birthPlace" name="birthPlace" class="form-control">
+          <input type="text" id="birthPlace" name="birthPlace" class="form-control" value="<?php echo htmlspecialchars($info['birthPlace'] ?? ''); ?>">
       </div>
         <div class=" col-md-2">
             <label for="status">Marital Status*</label>
-            <select class="form-control" id="status" name="status" required>
-                <option>Select Status</option>
-                <!-- options here -->
-            </select>
+            <input type="text" class="form-control" id="status" name="status" value="<?php echo htmlspecialchars($info['status'] ?? ''); ?>">
           </div>
           <div class="col-md-2">
               <label for="religion" class="form-label">Religion</label>
-              <input type="text" id="religion" name="religion" class="form-control">
+              <input type="text" id="religion" name="religion" class="form-control" value="<?php echo htmlspecialchars($info['religion'] ?? ''); ?>">
           </div>
           <div class=" col-md-2">
             <label for="ethnicOrigin">Ethnic Origin</label>
-            <input type="text" id="ethnicOrigin" name="ethnicOrigin" class="form-control">
+            <input type="text" id="ethnicOrigin" name="ethnicOrigin" class="form-control" value="<?php echo htmlspecialchars($info['ethnicOrigin'] ?? ''); ?>">
+          </div>
+          <div class=" col-md-2">
+            <label for="OSCA">Osca Id</label>
+            <input type="text" id="oscaID" name="oscaID" class="form-control" value="<?php echo htmlspecialchars($info['oscaID'] ?? ''); ?>">
           </div>
       </div>
-      <?php endforeach; ?>
-    <?php else: ?>
-        <p>No information available to display.</p>
-    <?php endif; ?>
+
         <!-- Index2 -->
     <div class="mt-4">
         <p class="bg-primary text-white p-2">II. FAMILY COMPOSITION</p>
@@ -200,19 +202,19 @@ if (isset($_GET['profile_id'])) {
         <div class="form-row">
             <div class="form-group col-md-3">
                 <label for="spouse_lastname">Lastname (Apelyido) *</label>
-                <input type="text" class="form-control" id="spouse_lastname" required>
+                <input type="text" class="form-control" id="spouse_lastname" value="<?php echo htmlspecialchars($family['spouse_lastname'] ?? ''); ?>">
             </div>
             <div class="form-group col-md-3">
                 <label for="firstname">Firstname (Pangalan) *</label>
-                <input type="text" class="form-control" id="spouse_firstname" required>
+                <input type="text" class="form-control" id="spouse_firstname" value="<?php echo htmlspecialchars($family['spouse_firstname'] ?? ''); ?>">
             </div>
             <div class="form-group col-md-3">
                 <label for="middlename">Middlename (Gitnang Pangalan) *</label>
-                <input type="text" class="form-control" id="spouse_middlename" required>
+                <input type="text" class="form-control" id="spouse_middlename" value="<?php echo htmlspecialchars($family['spouse_middlename'] ?? ''); ?>">
             </div>
             <div class="form-group col-md-2">
                 <label for="extension">Extension</label>
-        <input type="text" class="form-control" id="spouse_extension">
+        <input type="text" class="form-control" id="spouse_extension" value="<?php echo htmlspecialchars($family['spouse_extension'] ?? ''); ?>">
             </div>
 
             <div class="FATHER-TEXT">
@@ -224,19 +226,19 @@ if (isset($_GET['profile_id'])) {
             <div class="form-row">
                 <div class="form-group col-md-3">
                     <label for="lastname">Lastname (Apelyido) *</label>
-                    <input type="text" class="form-control" id="lastname" required>
+                    <input type="text" class="form-control" id="lastname" value="<?php echo htmlspecialchars($family['father_lastname'] ?? ''); ?>">
                 </div>
                 <div class="form-group col-md-3">
                     <label for="firstname">Firstname (Pangalan) *</label>
-                    <input type="text" class="form-control" id="firstname" required>
+                    <input type="text" class="form-control" id="firstname" value="<?php echo htmlspecialchars($family['father_firstname'] ?? ''); ?>">
                 </div>
                 <div class="form-group col-md-3">
                     <label for="middlename">Middlename (Gitnang Pangalan) *</label>
-                    <input type="text" class="form-control" id="middlename" required>
+                    <input type="text" class="form-control" id="middlename" value="<?php echo htmlspecialchars($family['father_middlename'] ?? ''); ?>">
                 </div>
                 <div class="form-group col-md-2">
                     <label for="extension">Extension</label>
-            <input type="text" class="form-control" id="extension">
+            <input type="text" class="form-control" id="extension" value="<?php echo htmlspecialchars($family['father_extension'] ?? ''); ?>">
                 </div>
 
                 <div class="mother-TEXT">
@@ -248,19 +250,19 @@ if (isset($_GET['profile_id'])) {
                 <div class="form-row">
                     <div class="form-group col-md-3">
                         <label for="lastname">Lastname (Apelyido) *</label>
-                        <input type="text" class="form-control" id="lastname" required>
+                        <input type="text" class="form-control" id="lastname" value="<?php echo htmlspecialchars($family['mother_lastname'] ?? ''); ?>">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="firstname">Firstname (Pangalan) *</label>
-                        <input type="text" class="form-control" id="firstname" required>
+                        <input type="text" class="form-control" id="firstname" value="<?php echo htmlspecialchars($family['mother_firstname'] ?? ''); ?>">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="middlename">Middlename (Gitnang Pangalan) *</label>
-                        <input type="text" class="form-control" id="middlename" required>
+                        <input type="text" class="form-control" id="middlename" value="<?php echo htmlspecialchars($family['mother_middlename'] ?? ''); ?>">
                     </div>
                     <div class="form-group col-md-2">
                         <label for="extension">Extension</label>
-                <input type="text" class="form-control" id="extension">
+                <input type="text" class="form-control" id="extension" value="<?php echo htmlspecialchars($family['mother_extension'] ?? ''); ?>">
                     </div>    
                     </div>
 
@@ -293,7 +295,7 @@ if (isset($_GET['profile_id'])) {
     <div class="col-md-6">
       <label>32. Source of Income and Assistance (Check all applicable)</label><br>
       <input type="checkbox" name="income" value="salary"> 1. Own earnings, salary / wages<br>
-      <input type="checkbox" name="income" value="pension" id="pensionCheckbox"> 2. Own Pension <br>
+      <input type="checkbox" name="income" value="pension" id="pensionCheckbox"> 2. Own Pension
       <div id="pensionOptions" style="display: none; margin-left: 20px;">
         <input type="radio" name="pension_type" value="sss"> SSS Pension<br>
         <input type="radio" name="pension_type" value="gsis"> GSIS Pension<br>
@@ -328,6 +330,11 @@ if (isset($_GET['profile_id'])) {
    
 </form>
     </div>
+
+    <div>
+    <button type="submit" class="btn btn-primary mt-4">Submit Application</button>
+    </div>
+
 <script>
             document.querySelector("form").addEventListener("submit", function(event) {
                 let isValid = true;
