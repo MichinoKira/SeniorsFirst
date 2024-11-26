@@ -49,6 +49,7 @@ die("User not found.");
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    var_dump($_POST); // Check what is being submitted
     // Retrieve form data
     $firstname = $_POST['firstname'] ?? '';
     $middlename = $_POST['middlename'] ?? '';
@@ -62,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $province = $_POST['province'] ?? '';
     $city = $_POST['city'] ?? '';
     $brgy = $_POST['brgy'] ?? '';
-    $zone = $_POST['purok_name'] ?? '';
+    $purok_name = $_POST['purok_name'] ?? '';
     
     // Check if the profile already exists
     if ($profileStmt->rowCount() > 0) {

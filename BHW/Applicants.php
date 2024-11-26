@@ -34,6 +34,49 @@ try {
     exit();
 }
 
+// Check if the BHW user is logged in
+if (!isset($_SESSION['username'])) {
+  echo "You must be logged in to view this page.";
+  exit;
+}
+
+// Get the logged-in BHW user's ID
+$username = $_SESSION['username'];
+
+try {
+  // Fetch the purok_name of the logged-in BHW
+  $stmt = $pdo->prepare("SELECT purok_name FROM BHW WHERE username = :username");
+  $stmt->execute([':username' => $username]);
+  $bhw = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  if (!$bhw) {
+      echo "BHW not found.";
+      exit;
+  }
+
+  $purok_name = $bhw['purok_name'];
+
+  // Set up pagination
+  $limit = 10; // Number of records per page
+  $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page
+  $offset = ($page - 1) * $limit;
+
+  // Fetch users from user_profile with the same purok_name
+  $stmt = $pdo->prepare("SELECT * FROM user_profile WHERE purok_name = :purok_name LIMIT :limit OFFSET :offset");
+  $stmt->execute([':purok_name' => $purok_name, ':limit' => $limit, ':offset' => $offset]);
+  $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  // Fetch the total number of users for pagination controls
+  $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_profile WHERE purok_name = :purok_name");
+  $stmt->execute([':purok_name' => $purok_name]);
+  $total_users = $stmt->fetchColumn();
+  $total_pages = ceil($total_users / $limit);
+
+} catch (PDOException $e) {
+  echo "Error: " . $e->getMessage();
+  exit;
+}
+
 ?>
 
 
@@ -78,29 +121,90 @@ try {
 </head>
 
 <style>
-  /* Default dropdown color */
-.status-dropdown {
-    color: white; /* Black text by default */
-    text-align: center;
-    background-color: white;
-    border-radius: 30px;
-    font-size: 13px;
-    margin-top: 8px;
-    font-weight: bold;
+  /* Style the select element */
+select.status {
+  padding: 10px;
+  font-size: 16px;
 }
 
-/* Specific colors for each status */
-.status-dropdown.status-pending {
-    background-color: gray;
+/* Style individual option elements */
+select.status option {
+  background-color: #f0f0f0;  /* Light gray background */
+  color: black;  /* Black text color */
 }
 
-.status-dropdown.status-approved {
-    background-color: green;
+select.status option[value="Pending"] {
+  background-color: #ffeb3b;  /* Yellow background for Pending */
+  color: black;  /* Black text */
 }
 
-.status-dropdown.status-denied {
-    background-color: red;
+select.status option[value="Approved"] {
+  background-color: #4caf50;  /* Green background for Approved */
+  color: white;  /* White text */
 }
+
+select.status option[value="Denied"] {
+  background-color: #f44336;  /* Red background for Denied */
+  color: white;  /* White text */
+}
+
+/* Basic styles for the custom dropdown */
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-button {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-menu.open {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #ddd;
+}
+
+
+/* Pagination controls and styling */
+.pagination-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pagination-controls button {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 5px 10px;
+    }
+
+    .pagination-controls input {
+        width: 40px;
+        text-align: center;
+        margin: 0 5px;
+    }
 </style>
 
 <body>
@@ -334,6 +438,7 @@ try {
     </div>
 
     <!-- User Table -->
+    <?php if (!empty($users)) : ?>
     <table class="table table-bordered">
         <thead>
             <tr> 
@@ -347,41 +452,36 @@ try {
             </tr>
         </thead>
         <tbody>
-        <?php
-          // Query to fetch data
-          $stmt = $pdo->query("SELECT * FROM bhw 
-INNER JOIN bhw_profile ON bhw.bhw_id = bhw_profile.parent_id 
-INNER JOIN user_profile ON bhw.purok_name = user_profile.purok_name 
-WHERE bhw.purok_name AND bhw_profile.parent_id = user_profile.purok_name
-            ");
-          $count = 1;
+        <?php $count = $offset; ?>
+        <?php foreach ($users as $user) : ?>
+            <tr>
+              <td><?php echo ++$count; ?></td>
+              <td> <?php echo htmlspecialchars($user['firstname'] . " " . $user['lastname']); ?></td>
+              <td> <?php echo htmlspecialchars($user['purok_name'] . " Brgy. " . $user['brgy'] . " " . $user['city']) . ", " . $user['province']; ?></td>
+              <td> <?php echo htmlspecialchars($user['dob']); ?></td>
+              <td> <?php echo htmlspecialchars($user['gender']); ?></td>
+              <td>
+                <select class="form-select status" data-parent-id="<?php echo $user['profile_id']; ?>">
+                  <option value="Pending" <?php if (strtolower($user['status']) === 'pending') echo 'selected'; ?>>Pending</option>
+                  <option value="Approved" <?php if (strtolower($user['status']) === 'approved') echo 'selected'; ?>>Approved</option>
+                  <option value="Denied" <?php if (strtolower($user['status']) === 'denied') echo 'selected'; ?>>Denied</option>
+                </select>
+              </td>
+              <td class='action-column'>
+                <a href='archive.php?bhw_id=" . $row['bhw_id'] . "' class='btn btn-outline-secondary' title='Archive'>
+                    <i class='fas fa-archive'></i>
+                </a>
 
-          while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-              $status = $row['status']; // Status from the profile table
-
-              echo "<tr>";
-              echo "<td>" . $count++ . "</td>";
-              echo "<td>" . htmlspecialchars($row['firstname'] . " " . $row['lastname']) . "</td>";
-              echo "<td>" . htmlspecialchars($row['purok_name'] . " Brgy. " . $row['brgy'] . " " . $row['city']) . ", " . $row['province'] . "</td>";
-              echo "<td>" . htmlspecialchars($row['dob']) . "</td>";
-              echo "<td>" . htmlspecialchars($row['gender']) . "</td>";
-              echo "<td class='status-cell'>
-                      <select class='form-select status-dropdown' data-parent-id='" . $row['parent_id'] . "'>
-                          <option value='pending' " . ($status === 'pending' ? 'selected' : '') . ">Pending</option>
-                          <option value='approved' " . ($status === 'approved' ? 'selected' : '') . ">Approved</option>
-                          <option value='denied' " . ($status === 'denied' ? 'selected' : '') . ">Denied</option>
-                      </select>
-                    </td>";
-              echo "<td class='action-column'>
-                    <a href='archive.php?bhw_id=" . $row['bhw_id'] . "' class='btn btn-outline-secondary' title='Archive'>
-                        <i class='fas fa-archive'></i>
-                    </a>
-                    </td>";
-              echo "</tr>";
-          }
-        ?>
+              </td>
+            </tr>
+          <?php endforeach; ?>
         </tbody>
     </table>
+
+    
+    <?php else : ?>
+        <p>No applicants found.</p>
+    <?php endif; ?>
 
     <!-- Pagination Controls -->
     <div class="d-flex justify-content-between align-items-center mt-3" id="rowsPerPageSection">
@@ -412,54 +512,50 @@ WHERE bhw.purok_name AND bhw_profile.parent_id = user_profile.purok_name
     <!-- JavaScript to Manage Popup and Save Logic -->
     <script>
 
-document.addEventListener("DOMContentLoaded", function () {
-    const statusDropdowns = document.querySelectorAll(".status-dropdown");
+document.querySelectorAll('.status').forEach(function(select) {
+    select.addEventListener('change', function() {
+      var status = this.value;  // Get selected status
+      var parent_id = this.getAttribute('data-parent-id');  // Get the parent ID
 
-    function updateDropdownColor(dropdown) {
-        const value = dropdown.value;
-        dropdown.classList.remove("status-pending", "status-approved", "status-denied");
+      console.log("Status changed:", status, "Parent ID:", parent_id);  // Debugging
 
-        if (value === "pending") {
-            dropdown.classList.add("status-pending");
-        } else if (value === "approved") {
-            dropdown.classList.add("status-approved");
-        } else if (value === "denied") {
-            dropdown.classList.add("status-denied");
-        }
-    }
+      // Prepare POST data
+      var postData = new URLSearchParams();
+      postData.append('status', status);
+      postData.append('parent_id', parent_id);
 
-    // Initialize colors for existing dropdowns
-    statusDropdowns.forEach(dropdown => {
-        updateDropdownColor(dropdown);
-
-        dropdown.addEventListener("change", function () {
-            updateDropdownColor(this);
-
-            const parentId = this.getAttribute("data-parent-id");
-            const newStatus = this.value;
-
-            // AJAX request to update status in the database
-            fetch(`update_status.php`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ parent_id: parentId, status: newStatus }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("Status updated successfully!");
-                } else {
-                    alert("Failed to update status. Please try again.");
-                }
-            })
-            .catch(error => {
-                console.error("Error updating status:", error);
-            });
-        });
+      // Send AJAX request
+      fetch('update_status.php', {
+        method: 'POST',
+        body: postData
+      })
+      .then(response => response.text())
+      .then(data => {
+        console.log(data);  // Debugging response
+        alert(data);  // Show response to user
+      })
+      .catch(error => {
+        console.error('Error:', error);  // Debugging errors
+      });
     });
-});
+  });
+
+
+  const dropdownButton = document.querySelector('.dropdown-button');
+  const dropdownMenu = document.querySelector('.dropdown-menu');
+  const dropdownItems = document.querySelectorAll('.dropdown-item');
+
+  dropdownButton.addEventListener('click', () => {
+    dropdownMenu.classList.toggle('open');
+  });
+
+  dropdownItems.forEach(item => {
+    item.addEventListener('click', function() {
+      dropdownButton.textContent = this.textContent;
+      dropdownMenu.classList.remove('open');
+      // You can also send this status to your server using AJAX here
+    });
+  });
 
 
 
