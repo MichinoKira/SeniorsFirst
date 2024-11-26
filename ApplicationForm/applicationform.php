@@ -274,9 +274,9 @@ $economic = $ecoStmt->fetch(PDO::FETCH_ASSOC);
       <h4>IV. EDUCATION / HR PROFILE</h4>
     </div>
     <div class="col-12">
-      <label>27. Highest Educational Attainment</label><br>
+      <label>27. Highest Educational Attainment</label>
       <input type="checkbox" name="education" value="elementary_level"> 1. Elementary Level<br>
-      <input type="checkbox" name="education" value="elementary_grad"> 2. Elementary Graduate<br>
+      <input type="checkbox" name="education[]" value="elementary_grad"> 2. Elementary Graduate <br>
       <input type="checkbox" name="education" value="highschool_level"> 3. High School Level<br>
       <input type="checkbox" name="education" value="highschool_grad"> 4. High School Graduate<br>
       <input type="checkbox" name="education" value="college_level"> 5. College Level<br>
@@ -295,7 +295,7 @@ $economic = $ecoStmt->fetch(PDO::FETCH_ASSOC);
     <div class="col-md-6">
       <label>32. Source of Income and Assistance (Check all applicable)</label><br>
       <input type="checkbox" name="income" value="salary"> 1. Own earnings, salary / wages<br>
-      <input type="checkbox" name="income" value="pension" id="pensionCheckbox"> 2. Own Pension
+      <input type="checkbox" name="income" value="pension" id="pensionCheckbox"> 2. Own Pension <br>
       <div id="pensionOptions" style="display: none; margin-left: 20px;">
         <input type="radio" name="pension_type" value="sss"> SSS Pension<br>
         <input type="radio" name="pension_type" value="gsis"> GSIS Pension<br>
