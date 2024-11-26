@@ -362,7 +362,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <th>Name</th>
                         <th>Contact #</th>
                         <th>Gender</th>
-                        <th>Email</th>
                         <th>Address</th>
                         <th>Status</th>
                         <th>Action</th>
@@ -383,7 +382,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                           echo "<td>" . htmlspecialchars($row['purok_name']) . "</td>";
                           echo "<td>" . htmlspecialchars($row['name']) . "</td>";
                           echo "<td>" . htmlspecialchars($row['contact_number']) . "</td>";
-                          echo "<td>" . htmlspecialchars($row['gender']) . "</td>";
                           echo "<td>" . htmlspecialchars($row['email']) . "</td>";
                           echo "<td>" . htmlspecialchars($row['zone'] . " Brgy. " . $row['brgy'] . " " . $row['city']) . ", " . $row['province']. "</td>";
                           echo "<td class='status-cell'>

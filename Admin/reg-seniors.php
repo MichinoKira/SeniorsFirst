@@ -1,3 +1,21 @@
+<?php
+// Start the session
+session_start();
+
+// Check if user is logged in and has the 'brgy' role
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'brgy') {
+    header("Location: ../users/login.php");
+    exit();
+}
+
+// Include the database configuration file
+require_once '../db/db_config.php';
+
+
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -343,6 +361,7 @@
                 <th>#</th>
                 <th>Name</th>
                 <th>Address</th>
+                <th>Age</th>
                 <th>Birthdate</th>
                 <th>Gender</th>
                 <th>Status</th>
@@ -351,6 +370,24 @@
             </tr>
         </thead>
         <tbody>
+        <?php
+                    // Query to fetch user data
+                    $stmt = $pdo->query("SELECT * FROM user_profile WHERE status = 'Approved'");
+                    $count = 1;
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        echo "<tr>";
+                        echo "<td>" . $count++ . "</td>";
+                        echo "<td>" . htmlspecialchars($row['firstname'] . " " . $row['lastname']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['purok_name'] . " Brgy. " . $row['brgy'] . " " . $row['city']) . ", " . $row['province']. "</td>";
+                        echo "<td>" . htmlspecialchars($row['age']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['dob']) . "</td>";
+                        echo "<td>" . htmlspecialchars($row['gender']) . "</td>";
+                        echo "<td><span class='badge bg-success'>Active</span></td>"; // Adjust status badge as needed
+                        echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                        echo "<td><button class='btn btn-primary'>View</button></td>";
+                        echo "</tr>";
+                      }
+                  ?>
             
             <!-- Add more rows as needed -->
         </tbody>

@@ -6,78 +6,41 @@ session_start();
 // Include the database configuration file
 require_once '../db/db_config.php';
 
-// Check if the user is logged in
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();
+// Check if the user is logged in and has the 'brgy' role
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'bhw') {
+  header("Location: login.php"); // Redirect to login if not authorized
+  exit();
 }
 
-$username = $_SESSION['username'];
-$query = "SELECT * FROM users WHERE username = ?";
-$stmt = $pdo->prepare($query);
-$stmt->execute([$username]);
+// Check if `profile_id` is provided in the URL
+if (isset($_GET['profile_id'])) {
+    $profile_id = $_GET['profile_id'];
 
-// Check if user exists
-if ($stmt->rowCount() > 0) {
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    $user_id = $user['user_id']; // Fetch the user_id from the users table
+    // Prepare the query to fetch the user's data
+    $stmt = $pdo->prepare("SELECT * FROM profile WHERE profile_id = :profile_id");
+    $stmt->execute(['profile_id' => $profile_id]);
 
-    // Fetch profile data using the user_id (as profile_id)
-    $profileQuery = "SELECT * FROM profile WHERE profile_id = ?";
-    $profileStmt = $pdo->prepare($profileQuery);
-    $profileStmt->execute([$user_id]);
+    // Fetch the data
+    $row = $stmt->fetch();
 
-    // Check if profile exists
-    if ($profileStmt->rowCount() > 0) {
-        $profile = $profileStmt->fetch(PDO::FETCH_ASSOC);
-    } else {
-        // Initialize profile array to prevent undefined index errors
-        $profile = [
-            'firstname' => '',
-            'middlename' => '',
-            'lastname' => '',
-            'extension' => '',
-            'email' => '',
-            'age' => '',
-            'gender' => '',
-            'region' => '',
-            'province' => '',
-            'city' => '',
-            'brgy' => '',
-            'zone' => ''
-        ];
-    }
-} else {
-    // Handle the case where the user does not exist
-    die("User not found.");
-}
-
-
-  if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Capture the form data
-    $lastname = $_POST['lastname'];
-    $firstname = $_POST['firstname'];
-    $middlename = $_POST['middlename'];
-    $extension = $_POST['extension'];
-    $region = $_POST['region'];
-    $province = $_POST['province'];
-    $city = $_POST['city'];
-    $brgy = $_POST['brgy'];
-    $month = $_POST['month'];
-    $day = $_POST['day'];
-    $year = $_POST['year'];
-    $birthPlace = $_POST['birthPlace'];
-    $status = $_POST['status'];
-    $religion = $_POST['religion'];
-    $ethnicOrigin = $_POST['ethnicOrigin'];
-    
-    // Database insertion code goes here
-    // Example: save to the database using PDO or MySQLi
-
-    // Redirect to a success page after submission
-    header("Location: success_page.php");
-    exit();
+    try {
+      // Fetch records based on parent_id
+      $query = "SELECT * FROM info_sec WHERE parent_id = :parent_id";
+      $stmt = $pdo->prepare($query);
+      $stmt->bindParam(':parent_id', $parent_id, PDO::PARAM_INT);
+      $stmt->execute();
+  
+      $info_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  
+      if (empty($info_data)) {
+          echo "No data found for the given Parent ID.";
+          exit;
+      }
+  } catch (PDOException $e) {
+      echo "Error: " . $e->getMessage();
+      exit;
   }
+}
 ?>
 
 <!doctype html>
@@ -126,23 +89,25 @@ if ($stmt->rowCount() > 0) {
     </div>
       
   
-    <form method="POST" action="applicationform.php" enctype="multipart/form-data">
+    <form>
+    <?php if (isset($info_data) && !empty($info_data)): ?>
+      <?php foreach ($info_data as $row): ?>
       <div class="form-row">
           <div class="form-group col-md-3">
               <label for="lastname">Lastname (Apelyido) *</label>
-              <input type="text" class="form-control" id="lastname" name="lastname" value="<?php echo htmlspecialchars($profile['lastname'] ?? ''); ?>" required>
+              <input type="text" class="form-control" id="lastname" name="lastname" value="<?php echo htmlspecialchars($row[';astname']); ?>" required>
           </div>
           <div class="form-group col-md-3">
               <label for="firstname">Firstname (Pangalan) *</label>
-              <input type="text" class="form-control" id="firstname" name="firstname" value="<?php echo htmlspecialchars($profile['firstname'] ?? ''); ?>" required>
+              <input type="text" class="form-control" id="firstname" name="firstname" value="<?php echo htmlspecialchars($row['firstname']); ?>" required>
           </div>
           <div class="form-group col-md-3">
               <label for="middlename">Middlename (Gitnang Pangalan) *</label>
-              <input type="text" class="form-control" id="middlename" name="middlename" value="<?php echo htmlspecialchars($profile['middlename'] ?? ''); ?>" required>
+              <input type="text" class="form-control" id="middlename" name="middlename" value="<?php echo htmlspecialchars($row['middlename']); ?>" required>
           </div>
           <div class="form-group col-md-1">
               <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="" id="extensionCheckbox">
+                  <input class="form-check-input" type="checkbox" value="<?php echo htmlspecialchars($row['extension']); ?>" id="extensionCheckbox">
                   <label class="form-check-label" for="extensionCheckbox"  style="font-size: 10px;">
                       Check if the registrant has a name extension
                   </label>
@@ -219,7 +184,10 @@ if ($stmt->rowCount() > 0) {
             <input type="text" id="ethnicOrigin" name="ethnicOrigin" class="form-control">
           </div>
       </div>
-
+      <?php endforeach; ?>
+    <?php else: ?>
+        <p>No information available to display.</p>
+    <?php endif; ?>
         <!-- Index2 -->
     <div class="mt-4">
         <p class="bg-primary text-white p-2">II. FAMILY COMPOSITION</p>
@@ -325,7 +293,7 @@ if ($stmt->rowCount() > 0) {
     <div class="col-md-6">
       <label>32. Source of Income and Assistance (Check all applicable)</label><br>
       <input type="checkbox" name="income" value="salary"> 1. Own earnings, salary / wages<br>
-      <input type="checkbox" name="income" value="pension" id="pensionCheckbox"> 2. Own Pension
+      <input type="checkbox" name="income" value="pension" id="pensionCheckbox"> 2. Own Pension <br>
       <div id="pensionOptions" style="display: none; margin-left: 20px;">
         <input type="radio" name="pension_type" value="sss"> SSS Pension<br>
         <input type="radio" name="pension_type" value="gsis"> GSIS Pension<br>
@@ -360,11 +328,6 @@ if ($stmt->rowCount() > 0) {
    
 </form>
     </div>
-
-    <div>
-    <button type="submit" class="btn btn-primary mt-4">Submit Application</button>
-    </div>
-
 <script>
             document.querySelector("form").addEventListener("submit", function(event) {
                 let isValid = true;

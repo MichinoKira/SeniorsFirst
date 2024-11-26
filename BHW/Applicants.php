@@ -468,10 +468,9 @@ select.status option[value="Denied"] {
                 </select>
               </td>
               <td class='action-column'>
-                <a href='archive.php?bhw_id=" . $row['bhw_id'] . "' class='btn btn-outline-secondary' title='Archive'>
-                    <i class='fas fa-archive'></i>
+                <a href="../ApplicationForm/applicationform.php?view=<?php echo $user['profile_id']; ?>" class="btn btn-primary">
+                    <i class='fas fa-eye'></i>
                 </a>
-
               </td>
             </tr>
           <?php endforeach; ?>
