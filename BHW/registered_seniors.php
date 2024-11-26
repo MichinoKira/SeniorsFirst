@@ -34,6 +34,43 @@ try {
     exit();
 }
 
+// Get the logged-in BHW user's ID
+$username = $_SESSION['username'];
+
+try {
+  // Fetch the purok_name of the logged-in BHW
+  $stmt = $pdo->prepare("SELECT purok_name FROM BHW WHERE username = :username");
+  $stmt->execute([':username' => $username]);
+  $bhw = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  if (!$bhw) {
+      echo "BHW not found.";
+      exit;
+  }
+
+  $purok_name = $bhw['purok_name'];
+
+  // Set up pagination
+  $limit = 10; // Number of records per page
+  $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page
+  $offset = ($page - 1) * $limit;
+
+  // Fetch users from user_profile with the same purok_name
+  $stmt = $pdo->prepare("SELECT * FROM user_profile WHERE status = 'Approved' AND purok_name = :purok_name LIMIT :limit OFFSET :offset");
+  $stmt->execute([':purok_name' => $purok_name, ':limit' => $limit, ':offset' => $offset]);
+  $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  // Fetch the total number of users for pagination controls
+  $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_profile WHERE status = 'Approved' AND purok_name = :purok_name");
+  $stmt->execute([':purok_name' => $purok_name]);
+  $total_users = $stmt->fetchColumn();
+  $total_pages = ceil($total_users / $limit);
+
+} catch (PDOException $e) {
+  echo "Error: " . $e->getMessage();
+  exit;
+}
+
 ?>
 
 
@@ -76,6 +113,27 @@ try {
 
  
 </head>
+
+<style>
+  /* Pagination controls and styling */
+.pagination-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pagination-controls button {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 5px 10px;
+    }
+
+    .pagination-controls input {
+        width: 40px;
+        text-align: center;
+        margin: 0 5px;
+    }
+</style>
 
 <body>
 
@@ -240,6 +298,7 @@ try {
     </div>
 
     <!-- User Table -->
+    <?php if (!empty($users)) : ?>
     <table class="table table-bordered">
         <thead>
             <tr> 
@@ -248,15 +307,34 @@ try {
                 <th>Address</th>
                 <th>Birthdate</th>
                 <th>Gender</th>
-                <th>Status</th>
                 <th>Approval</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
+        <?php $count = $offset; ?>
+        <?php foreach ($users as $user) : ?>
+            <tr>
+              <td><?php echo ++$count; ?></td>
+              <td> <?php echo htmlspecialchars($user['firstname'] . " " . $user['lastname']); ?></td>
+              <td> <?php echo htmlspecialchars($user['purok_name'] . " Brgy. " . $user['brgy'] . " " . $user['city']) . ", " . $user['province']; ?></td>
+              <td> <?php echo htmlspecialchars($user['dob']); ?></td>
+              <td> <?php echo htmlspecialchars($user['gender']); ?></td>
+              <td> <?php echo htmlspecialchars($user['status']); ?></td>
+              <td class='action-column'>
+                <a href='archive.php?bhw_id=" . $row['bhw_id'] . "' class='btn btn-outline-secondary' title='Archive'>
+                    <i class='fas fa-archive'></i>
+                </a>
 
+              </td>
+            </tr>
+          <?php endforeach; ?>
         </tbody>
     </table>
+
+    <?php else : ?>
+        <p>No registered seniors on your area.</p>
+    <?php endif; ?>
 
     <!-- Pagination Controls -->
     <div class="d-flex justify-content-between align-items-center mt-3" id="rowsPerPageSection">
