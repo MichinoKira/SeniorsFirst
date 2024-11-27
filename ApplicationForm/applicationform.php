@@ -275,8 +275,8 @@ $economic = $ecoStmt->fetch(PDO::FETCH_ASSOC);
     </div>
     <div class="col-12">
       <label>27. Highest Educational Attainment</label>
-      <input type="checkbox" name="education" value="elementary_level"> 1. Elementary Level<br>
-      <input type="checkbox" name="education[]" value="elementary_grad"> 2. Elementary Graduate <br>
+      <input type="checkbox" name="education" id="education" value="elementary_level"> 1. Elementary Level<br>
+      <input type="checkbox" name="education" value="elementary_grad"> 2. Elementary Graduate <br>
       <input type="checkbox" name="education" value="highschool_level"> 3. High School Level<br>
       <input type="checkbox" name="education" value="highschool_grad"> 4. High School Graduate<br>
       <input type="checkbox" name="education" value="college_level"> 5. College Level<br>
@@ -329,10 +329,6 @@ $economic = $ecoStmt->fetch(PDO::FETCH_ASSOC);
 
    
 </form>
-    </div>
-
-    <div>
-    <button type="submit" class="btn btn-primary mt-4">Submit Application</button>
     </div>
 
 <script>
