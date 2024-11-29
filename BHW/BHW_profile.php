@@ -17,7 +17,7 @@ if ($stmt->rowCount() > 0) {
     $bhw_id = $user['bhw_id']; // Fetch the user_id from the users table
 
     // Fetch profile data using the user_id (as profile_id)
-    $profileQuery = "SELECT * FROM bhw_profile WHERE bhw_iD = ?";
+    $profileQuery = "SELECT * FROM bhw_profile WHERE bhw_ID = ?";
     $profileStmt = $pdo->prepare($profileQuery);
     $profileStmt->execute([$bhw_id]);
 

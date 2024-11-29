@@ -104,14 +104,16 @@ function isEcoSecComplete($pdo, $parent_id) {
     return !empty($row['income_sources']) && !empty($row['income_range']);
 }
 
+// Fetch the application status from the database
+$statusQuery = "SELECT status FROM user_profile WHERE parent_id = ?";
+$statusStmt = $pdo->prepare($statusQuery);
+$statusStmt->execute([$parent_id]);
+$statusRow = $statusStmt->fetch(PDO::FETCH_ASSOC);
 
-$applicationComplete = isApplicationComplete($pdo, $parent_id);
-function isApplicationComplete($pdo, $parent_id) {
-    return isInfoSecComplete($pdo, $parent_id) &&
-           isFamilySecComplete($pdo, $parent_id) &&
-           isEduSecComplete($pdo, $parent_id) &&
-           isEcoSecComplete($pdo, $parent_id);
-}
+// Default status if no record exists
+$applicationStatus = $statusRow['status'] ?? 'Pending';
+
+
 
 ?>
 
@@ -143,6 +145,36 @@ function isApplicationComplete($pdo, $parent_id) {
     color: black;
     text-align: center;
     margin-top: 15px;
+}
+
+.status-container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.button-container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.submit-btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+.status-message {
+    font-size: 1em;
+    font-weight: bold;
 }
 
 </style>
@@ -178,7 +210,14 @@ function isApplicationComplete($pdo, $parent_id) {
                 <p style="color: red;">THIS CARD IS NON-TRANSFERABLE AND VALID ANYWHERE IN THE COUNTRY</p>
             </div>
             <div class="status-container">
-                <h4>Application Status: <span style="font-weight: bold;">In Progress</span></h4>
+                <!-- Application Status Display -->
+    <?php if ($applicationStatus === 'Approved'): ?>
+        <p class="status-message" style="color: green;">Your application has been approved.</p>
+    <?php elseif ($applicationStatus === 'Denied'): ?>
+        <p class="status-message" style="color: red;">Your application has been denied. Please submit again.</p>
+    <?php else: ?>
+        <h4>Application Status: <span style="font-weight: bold; color: blue;">In Progress</span></h4>
+    <?php endif; ?>
             </div>
             <div class="progress-container">
                 <h4>Application Progress</h4>
@@ -203,12 +242,12 @@ function isApplicationComplete($pdo, $parent_id) {
                         <?php echo $ecoSecComplete ? 'Complete' : 'Incomplete'; ?>
                 </div>
             </div>
-            <?php if ($applicationComplete): ?>
-                <p class="status-message">Please wait for the status to be approved.</p>
-            <?php else: ?>
-                <a href="../ApplicationForm/info_sec.php" class="submit-btn">Submit Application</a>
-                <p class="warning">Please complete your profile before submitting an application.</p>
-            <?php endif; ?>
+            <div class="button-container">
+    <!-- Submit Application Button -->
+    <?php if ($applicationStatus === 'Denied' || $applicationStatus === 'Pending'): ?>
+        <a href="../ApplicationForm/info_sec.php" class="submit-btn">Submit Application</a>
+    <?php endif; ?>
+</div>
         </div>
     </div>
 
