@@ -2,14 +2,19 @@
 // Start the session
 session_start();
 
+// Include the database configuration file
+require_once '../db/db_config.php';
+
 // Check if user is logged in and has the 'brgy' role
 if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'brgy') {
     header("Location: ../users/login.php");
     exit();
 }
 
-// Include the database configuration file
-require_once '../db/db_config.php';
+// Fetching all records from the table
+$query = "SELECT * FROM user_profile WHERE approval_status = 'Approved'";
+$result = $pdo->query($query);
+?>
 
 
 
@@ -364,30 +369,28 @@ require_once '../db/db_config.php';
                 <th>Age</th>
                 <th>Birthdate</th>
                 <th>Gender</th>
-                <th>Status</th>
                 <th>Approval</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-        <?php
-                    // Query to fetch user data
-                    $stmt = $pdo->query("SELECT * FROM user_profile WHERE status = 'Approved'");
-                    $count = 1;
-                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<tr>";
-                        echo "<td>" . $count++ . "</td>";
-                        echo "<td>" . htmlspecialchars($row['firstname'] . " " . $row['lastname']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['purok_name'] . " Brgy. " . $row['brgy'] . " " . $row['city']) . ", " . $row['province']. "</td>";
-                        echo "<td>" . htmlspecialchars($row['age']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['dob']) . "</td>";
-                        echo "<td>" . htmlspecialchars($row['gender']) . "</td>";
-                        echo "<td><span class='badge bg-success'>Active</span></td>"; // Adjust status badge as needed
-                        echo "<td>" . htmlspecialchars($row['status']) . "</td>";
-                        echo "<td><button class='btn btn-primary'>View</button></td>";
-                        echo "</tr>";
-                      }
-                  ?>
+            <?php $count = $offset; ?>
+            <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)): ?>
+                    <tr>
+                      <td><?php echo ++$count; ?></td>
+                      <td><?php echo htmlspecialchars($row['firstname'] . " " . $row['lastname']); ?></td>
+                      <td><?php echo htmlspecialchars($row['purok_name'] . " Brgy. " . $row['brgy'] . " " . $row['city']) . ", " . $row['province']; ?></td>
+                      <td><?php echo htmlspecialchars($row['age']); ?></td>
+                      <td><?php echo htmlspecialchars($row['dob']); ?></td>
+                      <td><?php echo htmlspecialchars($row['gender']); ?></td>
+                      <td><?php echo htmlspecialchars($row['approval_status']); ?></td>
+                      <td class='action-column'>
+                        <a href="../ApplicationForm/applicationform.php?profile_id=<?php echo $row['profile_id']; ?>" class="btn btn-primary">
+                            <i class='fas fa-eye'></i>
+                        </a>
+                      </td>
+                    </tr>
+              <?php endwhile; ?>
             
             <!-- Add more rows as needed -->
         </tbody>
