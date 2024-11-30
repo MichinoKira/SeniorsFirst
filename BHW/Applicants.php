@@ -122,28 +122,28 @@ try {
 
 <style>
   /* Style the select element */
-select.status {
+select.approval_status {
   padding: 10px;
   font-size: 16px;
 }
 
 /* Style individual option elements */
-select.status option {
+select.approval_status option {
   background-color: #f0f0f0;  /* Light gray background */
   color: black;  /* Black text color */
 }
 
-select.status option[value="Pending"] {
+select.approval_status option[value="Pending"] {
   background-color: #ffeb3b;  /* Yellow background for Pending */
   color: black;  /* Black text */
 }
 
-select.status option[value="Approved"] {
+select.approval_status option[value="Approved"] {
   background-color: #4caf50;  /* Green background for Approved */
   color: white;  /* White text */
 }
 
-select.status option[value="Denied"] {
+select.approval_status option[value="Denied"] {
   background-color: #f44336;  /* Red background for Denied */
   color: white;  /* White text */
 }
@@ -205,6 +205,8 @@ select.status option[value="Denied"] {
         text-align: center;
         margin: 0 5px;
     }
+
+
 </style>
 
 <body>
@@ -338,17 +340,7 @@ select.status option[value="Denied"] {
             <li>
               <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
                 <i class="bi bi-gear"></i>
-                <span>Account Settings</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
-                <i class="bi bi-question-circle"></i>
-                <span>Need Help?</span>
+                <span>Change Password</span>
               </a>
             </li>
             <li>
@@ -447,6 +439,7 @@ select.status option[value="Denied"] {
                 <th>Address</th>
                 <th>Birthdate</th>
                 <th>Gender</th>
+                <th>Status</th>
                 <th>Approval</th>
                 <th>Action</th>
             </tr>
@@ -460,11 +453,15 @@ select.status option[value="Denied"] {
               <td> <?php echo htmlspecialchars($user['purok_name'] . " Brgy. " . $user['brgy'] . " " . $user['city']) . ", " . $user['province']; ?></td>
               <td> <?php echo htmlspecialchars($user['dob']); ?></td>
               <td> <?php echo htmlspecialchars($user['gender']); ?></td>
+              <td class="active_status <?php echo $user['status'] === 'Active' ? 'active' : 'inactive'; ?>">
+                  <?php echo htmlspecialchars($user['status']); ?>
+              </td>
+
               <td>
-                <select class="form-select status" data-parent-id="<?php echo $user['profile_id']; ?>">
-                  <option value="Pending" <?php if (strtolower($user['status']) === 'pending') echo 'selected'; ?>>Pending</option>
-                  <option value="Approved" <?php if (strtolower($user['status']) === 'approved') echo 'selected'; ?>>Approved</option>
-                  <option value="Denied" <?php if (strtolower($user['status']) === 'denied') echo 'selected'; ?>>Denied</option>
+                <select class="form-select approval_status" data-parent-id="<?php echo $user['profile_id']; ?>">
+                  <option value="Pending" <?php if (strtolower($user['approval_status']) === 'pending') echo 'selected'; ?>>Pending</option>
+                  <option value="Approved" <?php if (strtolower($user['approval_status']) === 'approved') echo 'selected'; ?>>Approved</option>
+                  <option value="Denied" <?php if (strtolower($user['approval_status']) === 'denied') echo 'selected'; ?>>Denied</option>
                 </select>
               </td>
               <td class='action-column'>
@@ -511,33 +508,34 @@ select.status option[value="Denied"] {
     <!-- JavaScript to Manage Popup and Save Logic -->
     <script>
 
-document.querySelectorAll('.status').forEach(function(select) {
-    select.addEventListener('change', function() {
-      var status = this.value;  // Get selected status
-      var parent_id = this.getAttribute('data-parent-id');  // Get the parent ID
+document.addEventListener('DOMContentLoaded', function () {
+    // Add event listener for dropdown changes
+    document.querySelectorAll('.approval_status').forEach(function (dropdown) {
+        dropdown.addEventListener('change', function () {
+            // Get the selected value and parent ID
+            const approvalStatus = this.value;
+            const parentId = this.getAttribute('data-parent-id');
 
-      console.log("Status changed:", status, "Parent ID:", parent_id);  // Debugging
-
-      // Prepare POST data
-      var postData = new URLSearchParams();
-      postData.append('status', status);
-      postData.append('parent_id', parent_id);
-
-      // Send AJAX request
-      fetch('update_status.php', {
-        method: 'POST',
-        body: postData
-      })
-      .then(response => response.text())
-      .then(data => {
-        console.log(data);  // Debugging response
-        alert(data);  // Show response to user
-      })
-      .catch(error => {
-        console.error('Error:', error);  // Debugging errors
-      });
+            // Send an AJAX POST request
+            fetch('update_status.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `approval_status=${approvalStatus}&parent_id=${parentId}`
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data); // Log server response
+                alert(data); // Optionally display a success message
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
     });
-  });
+});
+
 
 
   const dropdownButton = document.querySelector('.dropdown-button');

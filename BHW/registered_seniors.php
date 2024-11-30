@@ -56,12 +56,12 @@ try {
   $offset = ($page - 1) * $limit;
 
   // Fetch users from user_profile with the same purok_name
-  $stmt = $pdo->prepare("SELECT * FROM user_profile WHERE status = 'Approved' AND purok_name = :purok_name LIMIT :limit OFFSET :offset");
+  $stmt = $pdo->prepare("SELECT * FROM user_profile WHERE approval_status = 'Approved' AND purok_name = :purok_name LIMIT :limit OFFSET :offset");
   $stmt->execute([':purok_name' => $purok_name, ':limit' => $limit, ':offset' => $offset]);
   $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   // Fetch the total number of users for pagination controls
-  $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_profile WHERE status = 'Approved' AND purok_name = :purok_name");
+  $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_profile WHERE approval_status = 'Approved' AND purok_name = :purok_name");
   $stmt->execute([':purok_name' => $purok_name]);
   $total_users = $stmt->fetchColumn();
   $total_pages = ceil($total_users / $limit);
@@ -198,17 +198,7 @@ try {
             <li>
               <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
                 <i class="bi bi-gear"></i>
-                <span>Account Settings</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
-                <i class="bi bi-question-circle"></i>
-                <span>Need Help?</span>
+                <span>Change Password</span>
               </a>
             </li>
             <li>
@@ -307,6 +297,7 @@ try {
                 <th>Address</th>
                 <th>Birthdate</th>
                 <th>Gender</th>
+                <th>Status</th>
                 <th>Approval</th>
                 <th>Action</th>
             </tr>
@@ -320,12 +311,17 @@ try {
               <td> <?php echo htmlspecialchars($user['purok_name'] . " Brgy. " . $user['brgy'] . " " . $user['city']) . ", " . $user['province']; ?></td>
               <td> <?php echo htmlspecialchars($user['dob']); ?></td>
               <td> <?php echo htmlspecialchars($user['gender']); ?></td>
-              <td> <?php echo htmlspecialchars($user['status']); ?></td>
+              <td>
+                <select class="form-select status" data-parent-id="<?php echo $user['profile_id']; ?>">
+                  <option value="Active" <?php if (strtolower($user['status']) === 'active') echo 'selected'; ?>>Active</option>
+                  <option value="Inactive" <?php if (strtolower($user['status']) === 'inactive') echo 'selected'; ?>>Inactive</option>
+                </select>
+              </td>
+              <td> <?php echo htmlspecialchars($user['approval_status']); ?></td>
               <td class='action-column'>
-                <a href='archive.php?bhw_id=" . $row['bhw_id'] . "' class='btn btn-outline-secondary' title='Archive'>
-                    <i class='fas fa-archive'></i>
+                <a href="../ApplicationForm/applicationform.php?profile_id=<?php echo $user['profile_id']; ?>" class="btn btn-primary">
+                    <i class='fas fa-eye'></i>
                 </a>
-
               </td>
             </tr>
           <?php endforeach; ?>
@@ -365,6 +361,48 @@ try {
     <!-- JavaScript to Manage Popup and Save Logic -->
     <script>
 
+document.addEventListener('DOMContentLoaded', function () {
+    // Add event listener for dropdown changes
+    document.querySelectorAll('.status').forEach(function (dropdown) {
+        dropdown.addEventListener('change', function () {
+            // Get the selected value and parent ID
+            const approvalStatus = this.value;
+            const parentId = this.getAttribute('data-parent-id');
+
+            // Send an AJAX POST request
+            fetch('update_stat.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `status=${approvalStatus}&parent_id=${parentId}`
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data); // Log server response
+                alert(data); // Optionally display a success message
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+});
+
+const dropdownButton = document.querySelector('.dropdown-button');
+  const dropdownMenu = document.querySelector('.dropdown-menu');
+  const dropdownItems = document.querySelectorAll('.dropdown-item');
+
+  dropdownButton.addEventListener('click', () => {
+    dropdownMenu.classList.toggle('show');
+});
+
+dropdownItems.forEach(item => {
+    item.addEventListener('click', event => {
+        dropdownButton.textContent = event.target.textContent;
+        dropdownMenu.classList.remove('show');
+    });
+});
 
     </script>
 </main>

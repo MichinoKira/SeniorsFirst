@@ -203,7 +203,7 @@ $applicationStatus = $statusRow['status'] ?? 'Pending';
                 <p><?php echo htmlspecialchars(($profile['firstname'] ?? '') . ' ' . ($profile['middlename'] ?? '') . ' ' . ($profile['lastname'] ?? '')); ?></p>
                 <h3>Address:</h3>
                 <p><?php echo htmlspecialchars(($profile['province'] ?? '') . ' ' . ($profile['city'] ?? '') . ' ' . ($profile['brgy'] ?? '') . ' ' . ($profile['zone'] ?? '')); ?></p>
-                <img src="../qrCodes<?php echo $user_id; ?>.png" alt="QR Code with Logo">
+                <img src="generate_qr.php" alt="QR Code">
                 <p>Date of Birth: <?php echo htmlspecialchars($profile['dob']); ?> &nbsp; 
                 Sex: <?php echo htmlspecialchars($profile['gender']); ?> &nbsp; 
                 Age: <?php echo htmlspecialchars($profile['age']); ?></p>
