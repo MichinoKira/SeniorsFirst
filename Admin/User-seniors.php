@@ -14,9 +14,6 @@ require_once '../db/db_config.php';
 
 ?>
 
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -288,7 +285,7 @@ require_once '../db/db_config.php';
                         echo "<td>" . htmlspecialchars($row['age']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['dob']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['gender']) . "</td>";
-                        echo "<td><span class='badge bg-success'>Active</span></td>"; // Adjust status badge as needed
+                        echo "<td>" . htmlspecialchars($row['status']) . "</td>"; // Adjust status badge as needed
                         echo "<td><button class='btn btn-primary'>View</button></td>";
                         echo "</tr>";
                       }
