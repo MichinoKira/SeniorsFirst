@@ -5,6 +5,12 @@ session_start();
 // Include the database configuration file
 require_once '../db/db_config.php';
 
+// Fetch user data from the database based on the logged-in user
+$username = $_SESSION['username'];
+$query = "SELECT * FROM users WHERE username = ?";
+$stmt = $pdo->prepare($query);
+$stmt->execute([$username]);
+
 // Check if user exists
 if ($stmt->rowCount() > 0) {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
