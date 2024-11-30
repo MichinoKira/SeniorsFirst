@@ -176,7 +176,7 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
                 <button type="submit" class="edit-button">Save Profile</button>
             </form>
         <?php else: ?>
-            <p><strong>Name:</strong> <?php echo htmlspecialchars(($profile['firstname'] ?? '') . ' ' . ($profile['middlename'] ?? '') . ' ' . ($profile['lastname'] ?? ''). ' ' . ($profile['extension'] ?? '')); ?></p>
+        <p><strong>Name:</strong> <?php echo htmlspecialchars(($profile['firstname'] ?? '') . ' ' . ($profile['middlename'] ?? '') . ' ' . ($profile['lastname'] ?? ''). ' ' . ($profile['extension'] ?? '')); ?></p>
         <p><strong>Email:</strong> <?php echo htmlspecialchars($profile['email'] ?? ''); ?></p>
         <p><strong>Age:</strong> <?php echo htmlspecialchars($profile['age'] ?? ''); ?></p>
         <p><strong>Date of Birth:</strong> <?php echo htmlspecialchars($profile['dob'] ?? ''); ?></p>
