@@ -196,8 +196,8 @@ require_once '../db/db_config.php';
         </a>
         <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="charts-chartjs.html">
-              <i class="bi bi-circle"></i><span>Without Pension</span>
+            <a href="report_withoutPensions.php">
+              <i class="bi bi-circle"></i><span>Without Pensions</span>
             </a>
           </li>
           <li>

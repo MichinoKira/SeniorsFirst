@@ -258,7 +258,7 @@ $puroks = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </a>
         <ul id="charts-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
             <li>
-                <a href="Report-WithoutPensions.html">
+                <a href="report_withoutPensions.php">
                     <span>Without Pension</span>
                 </a>
             </li>

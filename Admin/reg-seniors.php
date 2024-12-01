@@ -11,6 +11,14 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'brgy') {
     exit();
 }
 
+// Initialize $offset with a default value
+$offset = 0;
+
+// Example usage with validation
+if (isset($_GET['offset']) && is_numeric($_GET['offset'])) {
+  $offset = (int)$_GET['offset']; // Convert to integer for safety
+}
+
 // Fetching all records from the table
 $query = "SELECT * FROM user_profile WHERE approval_status = 'Approved'";
 $result = $pdo->query($query);
@@ -281,7 +289,7 @@ $result = $pdo->query($query);
         <ul id="charts-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
             <li>
                 <a href="report_withoutPensions.php">
-                    <span>Without Pension</span>
+                    <span>Without Pensions</span>
                 </a>
             </li>
             <li>
