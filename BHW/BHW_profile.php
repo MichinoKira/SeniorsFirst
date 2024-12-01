@@ -83,8 +83,11 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/profile.css">
-    <script src="https://kit.fontawesome.com/f9f0cbfe40.js" crossorigin="anonymous"></script>
+
     <title>User Profile</title>
 </head>
 <body>
@@ -159,4 +162,5 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
         <?php endif; ?>
     </div>
 </body>
+<script src="https://kit.fontawesome.com/f9f0cbfe40.js" crossorigin="anonymous"></script>
 </html>

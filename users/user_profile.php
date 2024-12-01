@@ -132,6 +132,7 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
             <?php endif; ?>
 
         <?php if ($isEdit): ?>
+            <a href="user_profile.php" class="btn btn-link back-button" alt="Profile Image"></a>
             <form id="profile-form" method="POST" action="user_profile.php" enctype="multipart/form-data">
             <div class="form-group" id="name">
                 <label>First Name</label>
@@ -164,7 +165,6 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
             <div class="form-group">
                 <label for="age">Age</label>
                 <input type="text" id="age" name="age" class="form-control" value="<?php echo htmlspecialchars($profile['age'] ?? ''); ?>" readonly>
-                <small id="age-message">Age must match with date of birth.</small> <!-- Display the message here -->
             </div>
 
             <div class="form-group" id="gender">
