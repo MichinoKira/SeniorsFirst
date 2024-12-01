@@ -83,49 +83,61 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/profile.css">
-
     <title>User Profile</title>
 </head>
 <body>
-    <div class="profile-container">
-        <div class="profile-header">
-            <div class="back-button" onclick="window.location.href='BHW-Dashboard.php';">&#x2190;</div>
-            <h2>PROFILE</h2>
-            <div class="profile-icon">
-                <img  alt="Profile Image" id="profileImage">
-                <label for="profile_image" class="camera-icon">
-                    <i class="fas fa-camera"></i>
-                </label>
-                <input type="file" id="profile_image" name="profile_image" accept="image/*" style="display: none;" onchange="previewImage(event)">
+<div class="container mt-4 profile-container">
+        <div class="text-left mb-3">
+                <a href="BHW-Dashboard.php" class="btn btn-link back-button" alt="Profile Image">
+                <i class="fas fa-arrow-left"></i>
+                </a>    
             </div>
-        </div>
 
-        <?php if ($updated): ?>
-            <p class="update-message">Profile updated successfully!</p>
-        <?php endif; ?>
+            <div class="text-center">
+                <h1 class="profile-title">PROFILE</h1>
+
+                <div class="profile-image">
+                    <img id="profile-img" src="css/img/seniorsamplepic.jpg" alt="Profile Image">
+                    <div class="camera-icon" id="camera-icon">
+                        <i class="fa fa-camera"></i>
+                        <input type="file" id="file-input" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+            </div>
+
+            <?php if ($updated): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Profile updated successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
         <?php if ($isEdit): ?>
-            <div class="back-button" onclick="window.location.href='BHW_profile.php';">&#x2190;</div>
+            <a href="BHW_profile.php" class="btn btn-link back-button" alt="Profile Image"></a>
             <form class="profile-form" method="POST" action="BHW_profile.php" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($profile['name'] ?? ''); ?>" required>
+                <div class="form-group" id="name">
+                    <label>Name</label>
+                    <input type="text" id="name" name="name" class="form-control" value="<?php echo htmlspecialchars($profile['name'] ?? ''); ?>" required>
                 </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($profile['email'] ?? ''); ?>"  required>
+
+                <div class="form-group" id="email">
+                    <label>Email</label>
+                    <input type="email" id="email" name="email" class="form-control" value="<?php echo htmlspecialchars($profile['email'] ?? ''); ?>" required>
                 </div>
+
                 <div class="form-group">
                     <label for="dob">Date of Birth</label>
-                    <input type="date" id="dob" name="dob" value="<?php echo htmlspecialchars($profile['dob'] ?? ''); ?>"  required>
+                    <input type="date" id="dob" name="dob" class="form-control" value="<?php echo htmlspecialchars($profile['dob'] ?? ''); ?>" required>
                 </div>
+
                 <div class="form-group">
                     <label for="age">Age</label>
-                    <input type="number" id="age" name="age" value="<?php echo htmlspecialchars($profile['age'] ?? ''); ?>"  required>
+                    <input type="text" id="age" name="age" class="form-control" value="<?php echo htmlspecialchars($profile['age'] ?? ''); ?>" readonly>
                 </div>
+
                 <div class="form-group">
                     <label for="gender">Gender</label>
                     <select id="gender" name="gender" required>
@@ -133,34 +145,115 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
                         <option value="Female" <?php if (($profile['gender'] ?? '') == 'female') echo 'selected'; ?>>Female</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="address">Province</label>
-                    <input type="text" id="province" name="province" value="<?php echo htmlspecialchars($profile['province'] ?? ''); ?>"  required>
+
+                <div class="form-group" id="province">
+                    <label>Province</label>
+                    <input type="text" id="province" name="province" class="form-control" value="<?php echo htmlspecialchars($profile['province'] ?? ''); ?>" required>
                 </div>
-                <div class="form-group">
-                    <label for="address">City?Municipality</label>
-                    <input type="text" id="city" name="city" value="<?php echo htmlspecialchars($profile['city'] ?? ''); ?>"  required>
+
+                <div class="form-group" id="city">
+                    <label>City / Municipality</label>
+                    <input type="text" id="city" name="city" class="form-control" value="<?php echo htmlspecialchars($profile['city'] ?? ''); ?>" required>
                 </div>
-                <div class="form-group">
-                    <label for="address">Barangay</label>
-                    <input type="text" id="brgy" name="brgy" value="<?php echo htmlspecialchars($profile['brgy'] ?? ''); ?>" required>
+
+                <div class="form-group" id="brgy">
+                    <label>Barangay</label>
+                    <input type="varchar" id="brgy" name="brgy" class="form-control" value="<?php echo htmlspecialchars($profile['brgy'] ?? ''); ?>" required>
                 </div>
-                <div class="form-group">
-                    <label for="address">Zone/Purok</label>
-                    <input type="text" id="zone" name="zone" value="<?php echo htmlspecialchars($profile['zone'] ?? ''); ?>" required>
+
+                <div class="form-group" id="zone">
+                    <label>Zone</label>
+                    <input type="varchar" id="zone" name="zone" class="form-control" value="<?php echo htmlspecialchars($profile['zone'] ?? ''); ?>" required>
                 </div>
+
                 <button type="submit" class="edit-button">Save Profile</button>
+
             </form>
         <?php else: ?>
-            <p><strong>Name:</strong> <?php echo htmlspecialchars($profile['name'] ?? ''); ?> </p>
-        <p><strong>Email:</strong> <?php echo htmlspecialchars($profile['email'] ?? ''); ?> </p>
-        <p><strong>Age:</strong> <?php echo htmlspecialchars($profile['age'] ?? ''); ?> </p>
-        <p><strong>Date of Birth:</strong> <?php echo htmlspecialchars($profile['dob'] ?? ''); ?> </p>
-        <p><strong>Gender:</strong> <?php echo htmlspecialchars($profile['gender'] ?? ''); ?> </p>
-        <p><strong>Address:</strong> <?php echo htmlspecialchars(($profile['zone'] ?? ''). ' ' . ($profile['brgy'] ?? ''). ' ' . ($profile['city'] ?? '') . ' ' . ($profile['province'] ?? '')); ?></p>
+            <div class="form-group" id="name">
+                <label>Name</label>
+                <input type="text" id="name" class="form-control" value="<?php echo htmlspecialchars($profile['name'] ?? ''); ?>" readonly>
+            </div>
+
+            <div class="form-group" id="email">
+                <label>Email</label>
+                <input type="text" id="email" class="form-control" value="<?php echo htmlspecialchars($profile['email'] ?? ''); ?>" readonly>
+            </div>
+
+            <div class="form-group" id="age">
+                <label>Age</label>
+                <input type="text" id="age" class="form-control" value="<?php echo htmlspecialchars($profile['age'] ?? ''); ?>" readonly>
+            </div>
+
+            <div class="form-group" id="dob">
+                <label>Date of Birth</label>
+                <input type="text" id="dob" class="form-control" value="<?php echo htmlspecialchars($profile['dob'] ?? ''); ?>" readonly>
+            </div>
+
+            <div class="form-group" id="gender">
+                <label>Gender</label>
+                <input type="text" id="gender" class="form-control" value="<?php echo htmlspecialchars($profile['gender'] ?? ''); ?>" readonly>
+            </div>
+
+            <div class="form-group" id="address">
+                <label>Email</label>
+                <input type="text" id="addtess" class="form-control" value="<?php echo htmlspecialchars(($profile['zone'] ?? '') . ' ' . ($profile['brgy'] ?? '') . ' ' . ($profile['city'] ?? '') . ' ' . ($profile['province'] ?? '')); ?>" readonly>
+            </div>
         <a href="../BHW/BHW_profile.php?edit=true" class="edit-button">Edit Profile</a>
         <?php endif; ?>
     </div>
 </body>
+<script>
+        // Function to calculate the age based on the date of birth
+        function calculateAge(dob) {
+            const today = new Date();
+            const birthDate = new Date(dob);  // Convert dob to Date object
+
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const month = today.getMonth();
+            const day = today.getDate();
+
+            // Adjust age if the birthday hasn't occurred yet this year
+            if (month < birthDate.getMonth() || (month === birthDate.getMonth() && day < birthDate.getDate())) {
+                age--;
+            }
+
+            return age;
+        }
+
+        // Function to automatically fill in the age field when DOB is entered
+        function autoCalculateAge() {
+            const dob = document.getElementById('dob').value;  // Get the DOB value
+            console.log("DOB Selected: ", dob);  // Log the value of dob
+
+            if (dob) {
+                const calculatedAge = calculateAge(dob);
+                console.log("Calculated Age: ", calculatedAge);  // Log the calculated age
+
+                // Update the age field with the calculated age
+                const ageField = document.getElementById('age');
+                if (ageField) {
+                    ageField.value = calculatedAge;  // Set the calculated age to the age field
+                    console.log("Age Field Updated: ", ageField.value);  // Log the updated value
+                }
+            } else {
+                // If DOB is empty, clear the age field
+                const ageField = document.getElementById('age');
+                if (ageField) {
+                    ageField.value = '';  // Clear the age field if DOB is empty
+                }
+            }
+        }
+
+        // Ensure the DOM is fully loaded before adding the event listener
+        document.addEventListener('DOMContentLoaded', function() {
+            const dobField = document.getElementById('dob');
+            if (dobField) {
+                dobField.addEventListener('input', autoCalculateAge);  // Attach event listener to DOB field
+            }
+        });
+    </script>
+
+
 <script src="https://kit.fontawesome.com/f9f0cbfe40.js" crossorigin="anonymous"></script>
 </html>

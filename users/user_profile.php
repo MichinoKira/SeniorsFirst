@@ -143,6 +143,7 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
                 <label>Middle Name</label>
                 <input type="text" id="middlename" name="middlename" class="form-control" value="<?php echo htmlspecialchars($profile['middlename'] ?? ''); ?>" required>
             </div>
+
             <div class="form-group" id="lastname">
                 <label>Last Name</label>
                 <input type="text" id="lastname" name="lastname" class="form-control" value="<?php echo htmlspecialchars($profile['lastname'] ?? ''); ?>" required>
@@ -187,7 +188,7 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
             </div>
 
             <div class="form-group" id="city">
-                <label>City</label>
+                <label>City / Municipality</label>
                 <input type="text" id="city" name="city" class="form-control" value="<?php echo htmlspecialchars($profile['city'] ?? ''); ?>" required>
             </div>
 
