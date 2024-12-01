@@ -369,6 +369,7 @@ $result = $pdo->query($query);
                 <th>Age</th>
                 <th>Birthdate</th>
                 <th>Gender</th>
+                <th>Status</th>
                 <th>Approval</th>
                 <th>Action</th>
             </tr>
@@ -383,10 +384,15 @@ $result = $pdo->query($query);
                       <td><?php echo htmlspecialchars($row['age']); ?></td>
                       <td><?php echo htmlspecialchars($row['dob']); ?></td>
                       <td><?php echo htmlspecialchars($row['gender']); ?></td>
+                      <td><?php echo htmlspecialchars($row['status']); ?></td>
                       <td><?php echo htmlspecialchars($row['approval_status']); ?></td>
                       <td class='action-column'>
                         <a href="../ApplicationForm/applicationform.php?profile_id=<?php echo $row['profile_id']; ?>" class="btn btn-primary">
                             <i class='fas fa-eye'></i>
+                        </a>
+
+                        <a href="archive_action.php?profile_id=<?php echo $row['profile_id']; ?>" class="btn btn-secondary ms-2">
+                          <i class='fas fa-archive'></i>
                         </a>
                       </td>
                     </tr>
