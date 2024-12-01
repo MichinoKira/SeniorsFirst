@@ -1,105 +1,109 @@
 body {
+    background-color: #f0f0f0;
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
 }
 
 .profile-container {
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 1000px;
-    padding: 20px;
+    background-color: rgb(255, 255, 255);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 1500px;
+    max-width: 100%;
+    width: 600px;
+    margin: 40px auto;
 }
-
-.profile-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
-    position: relative;
-}
-
 .back-button {
-    position: absolute;
-    top: 0;
-    left: 0;
-    font-size: 24px;
-    cursor: pointer;
+    font-size: 25px;
+    color: #000000;
+    margin-bottom: 1px;
 }
 
-.profile-icon {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    background-color: #e0e0e0;
-    border-radius: 50%;
-    margin-bottom: 10px;
-}
-
-.profile-header h2 {
-    font-size: 20px;
+.profile-title {
     font-weight: bold;
-    color: #333333;
+    margin-bottom: 15px;
+    font-family: Arial, Helvetica, sans-serif;
 }
-.profile-form .form-group {
+
+.profile-image {
+    position: relative;
+    display: inline-block;
     margin-bottom: 15px;
 }
 
-.profile-form label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #555555;
-}
-
-.profile-form input,
-.profile-form select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #cccccc;
-    border-radius: 5px;
-    font-size: 14px;
-}
-
-.edit-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 5px;
-    color: #ffffff;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.edit-button:hover {
-    background-color: #45a049;
-}
-.profile-icon img {
+.profile-image img {
     width: 100px;
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
-    display: block;
 }
 
 .camera-icon {
     position: absolute;
     bottom: 0;
     right: 0;
-    background-color: #4CAF50;
+    background-color: #04040498;
+    color: white;
     border-radius: 50%;
-    padding: 5px;
+    padding: 6px;
+    font-size: 0.8rem;
     cursor: pointer;
+    border: white 1px solid;
 }
 
-.camera-icon i {
-    color: #fff;
-    font-size: 18px;
+.form-group label {
+    font-weight: bold;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between; /* Place buttons on opposite sides */
+    margin-top: 30px; /* Space between buttons and form */
+}
+
+.button-container .btn {
+    flex: 0 0 48%; /* Ensure buttons take up equal width */
+    border-radius: 10px;
+}
+
+.btn-primary {
+    background-color: #259712;
+    color: white;
+    border: none;
+}
+
+.btn-danger {
+    background-color: white;
+    color: black;
+    border: black solid 0.5px;
+}
+
+.btn-primary:hover {
+    background-color: #259712;
+}
+
+.btn-danger:hover {
+    background-color: rgb(226, 14, 14);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 15px;
+        max-width: 300px;
+        max-height: 700px;
+    }
+
+    .profile-image img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .profile-title {
+        font-size: auto;
+    }
+
+    .button-container .btn {
+        font-size: auto;
+    }
 }

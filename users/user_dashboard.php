@@ -105,13 +105,13 @@ function isEcoSecComplete($pdo, $parent_id) {
 }
 
 // Fetch the application status from the database
-$statusQuery = "SELECT status FROM user_profile WHERE parent_id = ?";
+$statusQuery = "SELECT approval_status FROM user_profile WHERE parent_id = ?";
 $statusStmt = $pdo->prepare($statusQuery);
 $statusStmt->execute([$parent_id]);
 $statusRow = $statusStmt->fetch(PDO::FETCH_ASSOC);
 
 // Default status if no record exists
-$applicationStatus = $statusRow['status'] ?? 'Pending';
+$applicationStatus = $statusRow['approval_status'] ?? 'Pending';
 
 
 
