@@ -280,7 +280,7 @@ $result = $pdo->query($query);
         </a>
         <ul id="charts-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
             <li>
-                <a href="Report-WithoutPensions.html">
+                <a href="report_withoutPensions.php">
                     <span>Without Pension</span>
                 </a>
             </li>
@@ -352,7 +352,7 @@ $result = $pdo->query($query);
                 <span class="input-group-text">
                     <i class="fas fa-search"></i>
                 </span>
-                <input type="text" class="form-control" placeholder="Search...">
+                <input type="text" id="searchInput" onkeyup="filterTable()" class="form-control" placeholder="Search...">
             </div>
             <!-- Search Button -->
             <button class="btn btn-success ms-2">Search</button>
@@ -360,7 +360,7 @@ $result = $pdo->query($query);
     </div>
 
     <!-- User Table -->
-    <table class="table table-striped">
+    <table id="dataTable" class="table table-striped">
         <thead>
             <tr>
                 <th>#</th>
@@ -402,6 +402,37 @@ $result = $pdo->query($query);
         </tbody>
     </table>
 </section>
+
+<script>
+  function filterTable() {
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById("dataTable");
+            const rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {  // Start at 1 to skip the header row
+                const cells = rows[i].getElementsByTagName("td");
+                let rowContainsSearchTerm = false;
+
+                for (let j = 0; j < cells.length; j++) {
+                    const cell = cells[j];
+                    if (cell) {
+                        if (cell.textContent.toLowerCase().includes(filter)) {
+                            rowContainsSearchTerm = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Display or hide the row based on the search result
+                if (rowContainsSearchTerm) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+</script>
   </main><!-- End #main -->
 
   <!-- ======= Footer ======= -->
@@ -421,7 +452,6 @@ $result = $pdo->query($query);
   <script src="../Admin/admin_css/vendor/simple-datatables/simple-datatables.js"></script>
   <script src="../Admin/admin_css/vendor/tinymce/tinymce.min.js"></script>
   <script src="../Admin/admin_css/vendor/php-email-form/validate.js"></script>
-
   <!-- Template Main JS File -->
   <script src="../Admin/admin_css/js/main.js"></script>
 </body>

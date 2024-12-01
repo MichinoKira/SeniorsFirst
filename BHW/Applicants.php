@@ -77,6 +77,26 @@ try {
   exit;
 }
 
+$records_per_page = 5; // Number of records per page
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$start_from = ($page - 1) * $records_per_page;
+
+// Fetch records for the current page
+$query = "SELECT * FROM user_profile LIMIT :start_from, :records_per_page";
+$stmt = $pdo->prepare($query);
+$stmt->bindParam(':start_from', $start_from, PDO::PARAM_INT);
+$stmt->bindParam(':records_per_page', $records_per_page, PDO::PARAM_INT);
+$stmt->execute();
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Get the total records
+$total_records_query = "SELECT COUNT(*) FROM user_profile";
+$stmt_total = $pdo->prepare($total_records_query);
+$stmt_total->execute();
+$total_records = $stmt_total->fetchColumn();
+$total_pages = ceil($total_records / $records_per_page);
+
+
 ?>
 
 
@@ -422,7 +442,7 @@ select.approval_status option[value="Denied"] {
                 <span class="input-group-text">
                     <i class="fas fa-search"></i>
                 </span>
-                <input type="text" class="form-control" placeholder="Search...">
+                <input type="text" id="searchInput" onkeyup="filterTable()" class="form-control" placeholder="Search...">
             </div>
             <!-- Search Button -->
             <button class="btn btn-success ms-2">Search</button>
@@ -431,7 +451,7 @@ select.approval_status option[value="Denied"] {
 
     <!-- User Table -->
     <?php if (!empty($users)) : ?>
-    <table class="table table-bordered">
+    <table id="dataTable" class="table table-bordered">
         <thead>
             <tr> 
                 <th>#</th>
@@ -481,7 +501,6 @@ select.approval_status option[value="Denied"] {
 
     <!-- Pagination Controls -->
     <div class="d-flex justify-content-between align-items-center mt-3" id="rowsPerPageSection">
-        <span>1-1 of 1</span>
         <div class="pagination-controls d-flex align-items-center">
             <button class="btn btn-light"><i class="bi bi-chevron-left"></i></button>
             <input type="text" class="pagination-input mx-2" value="1/10">
@@ -554,7 +573,82 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // Function to filter the table as the user types in the search bar
+  function filterTable() {
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById("dataTable");
+            const rows = table.getElementsByTagName("tr");
 
+            for (let i = 1; i < rows.length; i++) {  // Start at 1 to skip the header row
+                const cells = rows[i].getElementsByTagName("td");
+                let rowContainsSearchTerm = false;
+
+                for (let j = 0; j < cells.length; j++) {
+                    const cell = cells[j];
+                    if (cell) {
+                        if (cell.textContent.toLowerCase().includes(filter)) {
+                            rowContainsSearchTerm = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Display or hide the row based on the search result
+                if (rowContainsSearchTerm) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const paginationInput = document.getElementById("paginationInput");
+
+    let currentPage = 1;
+    const totalPages = 10; // Replace with PHP's `$total_pages` dynamically if needed.
+
+    // Update the pagination input display
+    const updatePaginationInput = () => {
+        paginationInput.value = `${currentPage}/${totalPages}`;
+    };
+
+    // Function to fetch and update table data
+    const fetchPageData = (page) => {
+        // Use AJAX to fetch data dynamically
+        fetch(`applicants_table_page.php?page=${page}`)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("dataTable").innerHTML = data;
+            })
+            .catch(error => console.error('Error:', error));
+    };
+
+    // Previous button click
+    prevBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            updatePaginationInput();
+            fetchPageData(currentPage);
+        }
+    });
+
+    // Next button click
+    nextBtn.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            updatePaginationInput();
+            fetchPageData(currentPage);
+        }
+    });
+
+    // Initial fetch for page 1
+    fetchPageData(currentPage);
+});
 
     </script>
 </main>
