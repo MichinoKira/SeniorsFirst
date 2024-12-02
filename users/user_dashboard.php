@@ -191,7 +191,7 @@ $applicationStatus = $statusRow['approval_status'] ?? 'Pending';
     </div>
             <div class="header">
                 <img src="../images/SeniorsFirstLogo.png" alt="SeniorsFirst Logo" class="logo">
-                <h1>Hello, <?php echo htmlspecialchars($user['username']); ?>!</h1>
+                <h1>Hello, <?php echo htmlspecialchars($user['firstname']); ?>!</h1>
             </div>
             <div class="card">
             <div class="welcome-text">

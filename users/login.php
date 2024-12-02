@@ -1,8 +1,9 @@
 <?php
 // login.php
+session_start(); // Start session at the top
 
 require '../db/db_config.php';
-session_start(); // Start session at the top
+
 
 function redirectWithError($error) {
     $_SESSION['error'] = $error;
@@ -83,36 +84,76 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/login.css">
-    <title>Login - SeniorsFirst</title>
+    <title>SeniorsFirst - Login</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="login.css">
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <img src="../Images/SeniorsFirstLogo.png" alt="SeniorsFirst Logo">
+    <header class="header">
+        <div class="logo">
+            <img src="img/logo.png" alt="SeniorsFirst Logo" class="logo">
         </div>
-        <div class="login-form">
-            <h2>Log in</h2>
+
+        <div class="header-title">
+            <h1>SeniorsFirst</h1>
+        </div>
+    </header>
+    
+    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center" 
+         style="background-image: url('img/18.jpg');">
+        <div class="card p-4 shadow-lg login-card">
+            <h3 class="text-center fw-bold mb-3">LOG IN</h3>
             <?php
             if (isset($_SESSION['error'])) {
                 echo "<div class='error-message'>" . $_SESSION['error'] . "</div>";
                 unset($_SESSION['error']); // Clear the error message
             }
             ?>
-            <form action="login.php" method="post">
-                <input type="text" name="username" placeholder="Username" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <div>
-                    <input type="checkbox" id="rememberMe">
-                    <label for="rememberMe">Remember Me</label>
-                    <a href="#" style="float: right;">Forgot Password?</a>
+            <form id="loginForm" class="loginForm" method="POST" action="login.php">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-person"></i>
+                        </span>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
+                    </div>
                 </div>
-                <button type="submit">Login</button>
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Log In</button>
+                <p class="mt-3 text-center">
+                    Don't have an account? <a href="signup.php">Sign up</a>
+                </p>
             </form>
-            <div class="signup-link">
-                <p>Don't have an Account? <a href="../users/signup.php">Sign up</a></p>
-            </div>
         </div>
     </div>
+
+    <footer class="footer mt-5">
+        <div class="container text-center py-3">
+            <p class="mb-0">&copy; 2024 SeniorsFirst. All rights reserved.</p>
+            <p>
+                <a href="#">Privacy Policy</a> | 
+                <a href="#">Terms of Service</a> | 
+                <a href="contact.php">Contact Us</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
 </body>
 </html>
