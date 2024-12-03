@@ -1,3 +1,17 @@
+<?php
+// Start the session
+session_start();
+
+// Check if user is logged in and has the 'brgy' role
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'brgy') {
+    header("Location: ../users/login.php");
+    exit();
+}
+
+// Include the database configuration file
+require_once '../db/db_config.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
