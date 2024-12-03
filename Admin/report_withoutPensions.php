@@ -1,3 +1,30 @@
+<?php
+// Start the session
+session_start();
+
+// Include the database configuration file
+require_once '../db/db_config.php';
+
+// Check if user is logged in and has the 'brgy' role
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'brgy') {
+    header("Location: ../users/login.php");
+    exit();
+}
+
+// Initialize $offset with a default value
+$offset = 0;
+
+// Example usage with validation
+if (isset($_GET['offset']) && is_numeric($_GET['offset'])) {
+  $offset = (int)$_GET['offset']; // Convert to integer for safety
+}
+
+// Fetching all records from the table
+$query = "SELECT * FROM user_profile INNER JOIN eco_sec ON user_profile.parent_id = eco_sec.parent_id
+WHERE eco_sec.own_pension_type IS NULL OR eco_sec.own_pension_type = ''";
+$result = $pdo->query($query);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,6 +39,9 @@
   <!-- Favicons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+  <link href="../Admin/admin_css/css/img/favicon.png" rel="icon">
+  <link href="../Admin/admin_css/css/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link rel="stylesheet" href="../Admin/admin_css/css/styles.css">
   <link href="css/img/favicon.png" rel="icon">
   <link href="css/img/apple-touch-icon.png" rel="apple-touch-icon">
   <link rel="stylesheet" href="../admin_css/styles.css">
@@ -22,6 +52,17 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
+  <link href="../Admin/admin_css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../Admin/admin_css/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../Admin/admin_css/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="../Admin/admin_css/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="../Admin/admin_css/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="../Admin/admin_css/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="../Admin/admin_css/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="../Admin/admin_css/css/style.css" rel="stylesheet">
+  <link href="../Admin/admin_css/css/GraphicalR_Withoutpen.css" rel="stylesheet">
   <link href="css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="css/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="css/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
@@ -42,6 +83,12 @@
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
+      <a href="index.php" class="logo d-flex align-items-center">
+        <img src="../Admin/admin_css/css/img/logo.png" alt="">
+        <span class="d-none d-lg-block">SeniorsFirst</span>
+      </a>
+
+      <i class="bi bi-list toggle-sidebar-btn"></i>
       <a href="index.html" class="logo d-flex align-items-center">
         <img src="css/img/logo.png" alt="">
         <span class="d-none d-lg-block">SeniorsFirst</span>
@@ -137,6 +184,7 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
+        <a class="nav-link collapsed" href="index.php">
         <a class="nav-link collapsed" href="index.html">
           
           <span>Dashboard</span>
@@ -144,29 +192,28 @@
       </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
-        <a class="nav-link " data-bs-target="#components-nav"  href="cluster-purok-manage.html">
+        <a class="nav-link collapsed "   href="cluster-purok-manage.php">
           <span>Cluster-Purok</span>
         </a>
        
       </li><!-- End Components Nav -->
       <li class="nav-item">
-        <a class="nav-link collapsed" href="reg-seniors.html">
-          
+        <a class="nav-link collapsed" href="reg-seniors.php">
           <span>Registered Seniors</span>
         </a></li><!-- End Forms Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="">
           </i><span>Users</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-             <a href="Users-BHW.html">
+             <a href="Users-BHW.php">
               <span>BHW</span>
             </a>
           </li>
           <li>
-            <a href="User-seniors.html">
+            <a href="User-seniors.php">
               <span>Seniors</span>
             </a>
           </li>
@@ -174,32 +221,32 @@
       </li><!-- End Tables Nav -->
 
       <li class="nav-item">
-        <a class="nav-link" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="Report-WithoutPensions.html">
+        <a class="nav-link" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="report_withoutPensions.php">
           <span>Reports</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="charts-nav" class="nav-content collapse show " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="Report-WithoutPensions.html" class="active">
+            <a href="report_withoutPensions.php" class="active">
                 <i class="bi bi-circle"></i><span>Without Pension</span>
             </a>
           </li>
           <li>
-            <a class="nav-link collapsed" data-bs-target="#graphical-reports-nav" data-bs-toggle="collapse" href="Reports-Graphical-WithoutPensionsReports.html">
+            <a class="nav-link collapsed" data-bs-target="#graphical-reports-nav" data-bs-toggle="collapse" href="Report-Graphical-AgeReport.php">
                 <span>Graphical reports</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
             <ul id="graphical-reports-nav" class="nav-content collapse">
                 <li>
-                  <a href="Reports-Graphical-AgeReport.html">
+                  <a href="Report-Graphical-AgeReport.php">
                       <span><strong>Age Report</strong></span>
                   </a>
               </li>
                 <li>
-                    <a href="Reports-Graphical-WithoutPension.html">
+                    <a href="Report-Graphical-WithoutPension.php">
                         <span><strong>Without Pensions Reports</strong></span>
                     </a>
                 </li>
                 <li>
-                    <a href="Report-GraphicalCP.html">
+                    <a href="Report-GraphicalCP.php">
                         <span>Cluster/Purok</span>
                     </a>
                 </li>
@@ -209,12 +256,14 @@
 </li><!-- End Charts Nav -->
 
       <li class="nav-item">
+
         <a class="nav-link collapsed" data-bs-target="#icons-nav"  href="Activity-logs.html">
+
           <span>Activity log</span>
         </a>
       </li>
       <li class="nav-item"></li>
-        <a class="nav-link collapsed" data-bs-target="#icons-nav" href="Archives-list.html">
+        <a class="nav-link collapsed" data-bs-target="#icons-nav" href="archive_list.php">
           <span>Archive Lists</span>
         </a>
       </li><!-- End Icons Nav -->
@@ -227,7 +276,9 @@
 
     <div class="pagetitle">
       <div class="pagetitle-content">
-          <img src="css/img/regs-logo.PNG" alt="Dashboard Icon" class="page-icon">
+
+          <img src="../Admin/admin_css/css/img/regs-logo.PNG" alt="Dashboard Icon" class="page-icon">
+
           <h1>Without Pensions</h1>
       </div>
   </div><!-- End Page Title -->
@@ -245,7 +296,7 @@
                 <span class="input-group-text">
                     <i class="fas fa-search"></i>
                 </span>
-                <input type="text" class="form-control" placeholder="Search...">
+                <input type="text" id="searchInput" onkeyup="filterTable()" class="form-control" placeholder="Search...">
             </div>
             <!-- Search Button -->
             <button class="btn btn-success ms-2">Search</button>
@@ -253,12 +304,13 @@
     </div>
 
     <!-- User Table -->
-    <table class="table table-bordered">
+    <table id="dataTable" class="table table-bordered">
         <thead>
             <tr>
                 <th>#</th>
                 <th>Name</th>
                 <th>Address</th>
+                <th>Age</th>
                 <th>Birthdate</th>
                 <th>Gender</th>
                 <th>Status</th>
@@ -267,28 +319,32 @@
             </tr>
         </thead>
         <tbody>
+        <?php $count = $offset; ?>
+        <?php while ($row = $result->fetch(PDO::FETCH_ASSOC)): ?>
             <tr>
-                <th>1</th>
-                <td>Florentino V. Floro</td>
-                <td>Hinoba-an</td>
-                <td>1960-05-12</td>
-                <td>Male</td>
-                <td><span class="badge bg-success">Active</span></td>
-                <td><span class="badge bg-approved">Approved</span></td>
-                <td >
-                    <button class="btn action-btn" onclick="viewBHWInfo(1)" style="background-color: green; color: white;">
-                        <i class="bi bi-eye"></i>
-                      </button>
-                      <button class="btn action-btn" onclick="viewBHWInfo(1)" style="background-color: green; color: white;">
-                        <i class="fas fa-print"></i>
-                      </button>
-                </td>
+                <td><?php echo ++$count; ?></td>
+                <td><?php echo htmlspecialchars($row['firstname'] . " " . $row['lastname']); ?></td>
+                <td><?php echo htmlspecialchars($row['purok_name'] . " Brgy. " . $row['brgy'] . " " . $row['city']) . ", " . $row['province']; ?></td>
+                <td><?php echo htmlspecialchars($row['age']); ?></td>
+                <td><?php echo htmlspecialchars($row['dob']); ?></td>
+                <td><?php echo htmlspecialchars($row['gender']); ?></td>
+                <td><?php echo htmlspecialchars($row['status']); ?></td>
+                <td><?php echo htmlspecialchars($row['approval_status']); ?></td>
+                <td class='action-column'>
+                        <a href="../ApplicationForm/applicationform.php?profile_id=<?php echo $row['profile_id']; ?>" class="btn btn-primary">
+                            <i class='fas fa-eye'></i>
+                        </a>
+
+                        <a href="archive_action.php?profile_id=<?php echo $row['profile_id']; ?>" class="btn btn-secondary ms-2">
+                          <i class='fas fa-archive'></i>
+                        </a>
+                      </td>
             </tr>
+            <?php endwhile; ?>
             <!-- Add more rows as needed -->
         </tbody>
     </table>
     <div class="d-flex justify-content-between align-items-center mt-3" id="rowsPerPageSection">
-      <span>1-1 of 1</span>
       <div class="pagination-controls d-flex align-items-center">
           <button class="btn btn-light"><i class="bi bi-chevron-left"></i></button>
           <input type="text" class="pagination-input mx-2" value="1/10">
@@ -309,19 +365,48 @@
   </footer><!-- End Footer -->
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+<script>
+  function filterTable() {
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById("dataTable");
+            const rows = table.getElementsByTagName("tr");
 
+            for (let i = 1; i < rows.length; i++) {  // Start at 1 to skip the header row
+                const cells = rows[i].getElementsByTagName("td");
+                let rowContainsSearchTerm = false;
+
+                for (let j = 0; j < cells.length; j++) {
+                    const cell = cells[j];
+                    if (cell) {
+                        if (cell.textContent.toLowerCase().includes(filter)) {
+                            rowContainsSearchTerm = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Display or hide the row based on the search result
+                if (rowContainsSearchTerm) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+</script>
   <!-- Vendor JS Files -->
-  <script src="css/vendor/apexcharts/apexcharts.min.js"></script>
-  <script src="css/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="css/vendor/chart.js/chart.umd.js"></script>
-  <script src="css/vendor/echarts/echarts.min.js"></script>
-  <script src="css/vendor/quill/quill.js"></script>
-  <script src="css/vendor/simple-datatables/simple-datatables.js"></script>
-  <script src="css/vendor/tinymce/tinymce.min.js"></script>
-  <script src="css/vendor/php-email-form/validate.js"></script>
+  <script src="../Admin/admin_css/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="../Admin/admin_css/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../Admin/admin_css/vendor/chart.js/chart.umd.js"></script>
+  <script src="../Admin/admin_css/vendor/echarts/echarts.min.js"></script>
+  <script src="../Admin/admin_css/vendor/quill/quill.js"></script>
+  <script src="../Admin/admin_css/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="../Admin/admin_css/vendor/tinymce/tinymce.min.js"></script>
+  <script src="../Admin/admin_css/vendor/php-email-form/validate.js"></script>
 
   <!-- Template Main JS File -->
-  <script src="css/js/main.js"></script>
+  <script src="../Admin/admin_css/js/main.js"></script>
 
 </body>
 
