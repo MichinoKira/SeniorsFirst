@@ -24,7 +24,6 @@ $query = "SELECT * FROM user_profile WHERE approval_status = 'Approved'";
 $result = $pdo->query($query);
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 

@@ -116,7 +116,7 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
                 <h1 class="profile-title">PROFILE</h1>
 
                 <div class="profile-image">
-                    <img id="profile-img" alt="Profile Image">
+                    <img id="profile-img" src="css/img/seniorsamplepic.jpg" alt="Profile Image">
                     <div class="camera-icon" id="camera-icon">
                         <i class="fa fa-camera"></i>
                         <input type="file" id="file-input" accept="image/*" style="display: none;">
@@ -294,30 +294,6 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
                 dobField.addEventListener('input', autoCalculateAge);  // Attach event listener to DOB field
             }
         });
-    
-        // Ensure DOM is loaded before attaching event listeners
-    document.addEventListener('DOMContentLoaded', function () {
-        const fileInput = document.getElementById('file-input');
-        const profileImg = document.getElementById('profile-img');
-        const cameraIcon = document.getElementById('camera-icon');
-
-        // Trigger file input click when camera icon is clicked
-        cameraIcon.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        // Preview the selected image
-        fileInput.addEventListener('change', function () {
-            const file = fileInput.files[0]; // Get the selected file
-            if (file) {
-                const reader = new FileReader(); // Create FileReader to read the file
-                reader.onload = function (e) {
-                    profileImg.src = e.target.result; // Set the image src to the selected file's data URL
-                };
-                reader.readAsDataURL(file); // Read the file as a data URL
-            }
-        });
-    });
     </script>
 
 
