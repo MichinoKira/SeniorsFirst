@@ -200,9 +200,10 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
                 <label>Zone</label>
                 <input type="varchar" id="purok_name" name="purok_name" class="form-control" value="<?php echo htmlspecialchars($profile['purok_name'] ?? ''); ?>" required>
             </div>
-
-            <div class="text-center">
-                <button type="submit" class="edit-button">Save Profile</button>
+            
+            <div class="button-container text-center" id="button-container">
+                <button type="submit" class="btn btn-success btn-block" id="edit-btn">Save Profile</button>
+                <button type="button" class="btn btn-danger" id="cancel-btn">Cancel</button>
             </div>
             
         </form>
@@ -293,6 +294,10 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
             if (dobField) {
                 dobField.addEventListener('input', autoCalculateAge);  // Attach event listener to DOB field
             }
+        });
+    
+        document.getElementById("cancel-btn").addEventListener("click", function() {
+            location.reload();  // Reload the page to reset changes
         });
     </script>
 
