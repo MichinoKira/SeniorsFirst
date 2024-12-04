@@ -77,26 +77,21 @@ try {
   exit;
 }
 
-$records_per_page = 5; // Number of records per page
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$start_from = ($page - 1) * $records_per_page;
-
-// Fetch records for the current page
-$query = "SELECT * FROM user_profile LIMIT :start_from, :records_per_page";
-$stmt = $pdo->prepare($query);
-$stmt->bindParam(':start_from', $start_from, PDO::PARAM_INT);
-$stmt->bindParam(':records_per_page', $records_per_page, PDO::PARAM_INT);
-$stmt->execute();
-$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Get the total records
-$total_records_query = "SELECT COUNT(*) FROM user_profile";
-$stmt_total = $pdo->prepare($total_records_query);
-$stmt_total->execute();
-$total_records = $stmt_total->fetchColumn();
-$total_pages = ceil($total_records / $records_per_page);
 
 
+// Activity logging for user approval status change
+if (isset($approval_status)) {
+  try {
+      $logStmt = $pdo->prepare("INSERT INTO activity_log (bhw_id, action) VALUES (:bhw_id, :action)");
+      $logStmt->bindParam(':bhw_id', $_SESSION['username']);
+      $action = "Changed approval status of user to " . $approval_status;
+      $logStmt->bindParam(':action', $action);
+      $logStmt->execute();
+  } catch (PDOException $e) {
+      echo "Error logging activity: " . $e->getMessage();
+      exit();
+  }
+}
 ?>
 
 
@@ -139,95 +134,6 @@ $total_pages = ceil($total_records / $records_per_page);
 
  
 </head>
-
-<style>
-  /* Style the select element */
-select.approval_status {
-  padding: 10px;
-  font-size: 16px;
-}
-
-/* Style individual option elements */
-select.approval_status option {
-  background-color: #f0f0f0;  /* Light gray background */
-  color: black;  /* Black text color */
-}
-
-select.approval_status option[value="Pending"] {
-  background-color: #ffeb3b;  /* Yellow background for Pending */
-  color: black;  /* Black text */
-}
-
-select.approval_status option[value="Approved"] {
-  background-color: #4caf50;  /* Green background for Approved */
-  color: white;  /* White text */
-}
-
-select.approval_status option[value="Denied"] {
-  background-color: #f44336;  /* Red background for Denied */
-  color: white;  /* White text */
-}
-
-/* Basic styles for the custom dropdown */
-.custom-dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-button {
-  padding: 10px;
-  font-size: 16px;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  cursor: pointer;
-}
-
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.dropdown-menu.open {
-  display: block;
-}
-
-.dropdown-item {
-  padding: 10px;
-  cursor: pointer;
-}
-
-.dropdown-item:hover {
-  background-color: #ddd;
-}
-
-
-/* Pagination controls and styling */
-.pagination-controls {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .pagination-controls button {
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        padding: 5px 10px;
-    }
-
-    .pagination-controls input {
-        width: 40px;
-        text-align: center;
-        margin: 0 5px;
-    }
-
-
-</style>
 
 <body>
 

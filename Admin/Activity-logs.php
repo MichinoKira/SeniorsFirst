@@ -1,3 +1,26 @@
+<?php
+// Start the session
+session_start();
+
+// Check if user is logged in and has the 'brgy' role
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'brgy') {
+    header("Location: ../users/login.php");
+    exit();
+}
+
+// Include the database configuration file
+require_once '../db/db_config.php';
+
+try {
+  $stmt = $pdo->prepare("SELECT * FROM activity_log ORDER BY date_time DESC");
+  $stmt->execute();
+  $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+  echo "Error fetching logs: " . $e->getMessage();
+  exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -258,39 +281,20 @@
         <thead>
             <tr>
                 <th>DATE AND TIME</th>
-                <th>ACCOUNT</th>
-                <th>BHW</th>
+                <th>User ID</th>
+                <th>BHW ID</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>2024/05/07 11:20AM</td>
-                <td>RODOLFO E. VARGAS</td>
-                <td>REMAR RELIQUIAS</td>
-                <td><strong>SET STATUS: </strong> <span class="badge bg-success"> Active</span></td>
-                <td>
-                  <div style="display: flex; justify-content: center;">
-                    <button class="btn action-btn" onclick="viewBHWInfo(1)" style="background-color: green; color: white;">
-                      <i class="fas fa-undo"></i>
-                    </button>
-                  </div>
-                </td>
-            </tr>
-            
-            <tr>
-                <td>2024/05/07 11:20AM</td>
-                <td>RODOLFO E. VARGAS</td>
-                <td>REMAR RELIQUIAS</td>
-                <td><strong>SET ARRPROVAL: </strong> <span class="badge bg-success"> APPROVED</span></td>
-                <td>
-                  <div style="display: flex; justify-content: center;">
-                    <button class="btn action-btn" onclick="viewBHWInfo(1)" style="background-color: green; color: white;">
-                      <i class="fas fa-undo"></i>
-                    </button>
-                  </div>
-                </td>
-            </tr>
+        <?php foreach ($logs as $log): ?>
+                    <tr>
+                        <td><?php echo $log['date_time']; ?></td>
+                        <td><?php echo $log['profile_id']; ?></td> <!-- Replace with the actual user name if needed -->
+                        <td><?php echo $log['bhw_id']; ?></td> <!-- Replace with actual BHW name if needed -->
+                        <td><?php echo $log['action']; ?></td>
+                    </tr>
+                <?php endforeach; ?>
         </tbody>
     </table>
     <div class="d-flex justify-content-between align-items-center mt-3" id="rowsPerPageSection">

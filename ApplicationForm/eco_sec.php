@@ -144,7 +144,7 @@ $other_income = isset($eco_data['other_income']) ? $eco_data['other_income'] : '
                         <div class="col-md-6">
                             <label>32. Source of Income and Assistance (Check all applicable)</label><br>
                             <input type="checkbox" name="income[]" value="salary" <?php echo in_array('salary', $income_sources) ? 'checked' : ''; ?>> 1. Own earnings, salary / wages<br>
-                            <input type="checkbox" name="income[]" value="pension" id="pensionCheckbox" <?php echo in_array('pension', $income_sources) ? 'checked' : ''; ?>> 2. Own Pension
+                            <input type="checkbox" name="income[]" value="pension" id="pensionCheckbox" <?php echo in_array('pension', $income_sources) ? 'checked' : ''; ?>> 2. Own Pension <br>
                             <div id="pensionOptions" style="display: <?php echo in_array('pension', $income_sources) ? 'block' : 'none'; ?>; margin-left: 20px;">
                             <input type="radio" name="pension_type" value="sss" id="sssRadio" <?php echo in_array('sss', $income_range) ? 'checked' : ''; ?>> SSS Pension<br>
                             <div id="sssOptions" style="display: <?php echo (isset($eco_data['sss_type']) && $eco_data['sss_type']) ? 'block' : 'none'; ?>; margin-left: 20px;">

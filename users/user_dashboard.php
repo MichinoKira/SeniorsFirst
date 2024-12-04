@@ -112,9 +112,6 @@ $statusRow = $statusStmt->fetch(PDO::FETCH_ASSOC);
 
 // Default status if no record exists
 $applicationStatus = $statusRow['approval_status'] ?? 'Pending';
-
-
-
 ?>
 
 <!DOCTYPE html>
@@ -122,103 +119,60 @@ $applicationStatus = $statusRow['approval_status'] ?? 'Pending';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/user_dashboard.css">
+    <link rel="stylesheet" href="user_dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Welcome - SeniorsFirst</title>
+    <link rel="stylesheet" href="user_dashboard.css">
 </head>
-<style>
-
-.incomplete {
-    color: red;
-    font-weight: bold;
-}
-
-.status-message {
-    font-size: 1em;
-    color: blue;
-    text-align: center;
-    margin-top: 15px;
-}
-
-.warning{
-    font-size: 1em;
-    color: black;
-    text-align: center;
-    margin-top: 15px;
-}
-
-.status-container {
-    margin: 20px 0;
-    text-align: center;
-}
-
-.button-container {
-    margin: 20px 0;
-    text-align: center;
-}
-
-.submit-btn {
-    display: inline-block;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.submit-btn:hover {
-    background-color: #0056b3;
-}
-
-.status-message {
-    font-size: 1em;
-    font-weight: bold;
-}
-
-</style>
-
 <body>
     <div id="main">
-        <button class="nav-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
         <div class="container">
-        <div class="drawer" id="drawer">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeDrawer()">&times;</a>
-        <a href="user_profile.php">Profile</a>
-        <a href="changepassword.php">Change Password</a>
-        <a href="logout.php">Logout</a>
-    </div>
             <div class="header">
-                <img src="../images/SeniorsFirstLogo.png" alt="SeniorsFirst Logo" class="logo">
-                <h1>Hello, <?php echo htmlspecialchars($user['firstname']); ?>!</h1>
+                <svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#fff" fill-opacity="1" d="M0,288L60,261.3C120,235,240,181,360,165.3C480,149,600,171,720,181.3C840,192,960,192,1080,192C1200,192,1320,192,1380,192L1440,192L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>
+                <!-- Updated position for nav-btn (hamburger) -->
+                <button class="nav-btn" onclick="toggleDropdown()"><i class="fas fa-bars"></i></button>
+
+                <!-- Logo Header Section -->
+                <div class="logo-header">
+                    <img src="../users/img/logo.png" alt="SeniorsFirst Logo" class="logo">
+                </div>
+                <div class="Text1"><p>Hello, <?php echo htmlspecialchars($user['firstname']); ?>!</div>
             </div>
+    
+                
+            <!-- Dropdown Menu -->
+            <div class="dropdown" id="dropdownMenu">
+                <a href="user_profile.php">Profile</a>
+                <a href="changepassword.php">Change Password</a>
+                <a href="logout.php">Logout</a>
+            </div>
+
             <div class="card">
-            <div class="welcome-text">
-                <p>Republic of the Philippines</p>
-                <p>Province of Negros Occidental</p>
-                <p>MUNICIPALITY OF HINOBA-AN<br>OFFICE OF THE SENIOR CITIZEN AFFAIRS</p>
-            </div>
-                <h3>Name:</h3>
-                <p><?php echo htmlspecialchars(($profile['firstname'] ?? '') . ' ' . ($profile['middlename'] ?? '') . ' ' . ($profile['lastname'] ?? '')); ?></p>
-                <h3>Address:</h3>
-                <p><?php echo htmlspecialchars(($profile['province'] ?? '') . ' ' . ($profile['city'] ?? '') . ' ' . ($profile['brgy'] ?? '') . ' ' . ($profile['zone'] ?? '')); ?></p>
-                <img src="generate_qr.php" alt="QR Code">
+                <div class="welcome-text">
+                    <p>Republic of the Philippines</p>
+                    <p>Province of Negros Occidental</p>
+                    <p>MUNICIPALITY OF HINOBA-AN<br>OFFICE OF THE SENIOR CITIZEN AFFAIRS</p>
+                </div>
+                <h3>Name:</h3><p><?php echo htmlspecialchars(($profile['firstname'] ?? '') . ' ' . ($profile['middlename'] ?? '') . ' ' . ($profile['lastname'] ?? '')); ?></p>
+                <h3>Address:</h3><p><?php echo htmlspecialchars(($profile['province'] ?? '') . ' ' . ($profile['city'] ?? '') . ' ' . ($profile['brgy'] ?? '') . ' ' . ($profile['zone'] ?? '')); ?></p>
+                <img src="../qrCodes<?php echo $user_id; ?>.png" alt="QR Code with Logo">
                 <p>Date of Birth: <?php echo htmlspecialchars($profile['dob']); ?> &nbsp; 
                 Sex: <?php echo htmlspecialchars($profile['gender']); ?> &nbsp; 
                 Age: <?php echo htmlspecialchars($profile['age']); ?></p>
                 <p style="color: red;">THIS CARD IS NON-TRANSFERABLE AND VALID ANYWHERE IN THE COUNTRY</p>
             </div>
+
             <div class="status-container">
                 <!-- Application Status Display -->
-    <?php if ($applicationStatus === 'Approved'): ?>
-        <p class="status-message" style="color: green;">Your application has been approved.</p>
-    <?php elseif ($applicationStatus === 'Denied'): ?>
-        <p class="status-message" style="color: red;">Your application has been denied. Please submit again.</p>
-    <?php else: ?>
-        <h4>Application Status: <span style="font-weight: bold; color: blue;">In Progress</span></h4>
-    <?php endif; ?>
+                <?php if ($applicationStatus === 'Approved'): ?>
+                    <p class="status-message" style="color: green;">Your application has been approved.</p>
+                <?php elseif ($applicationStatus === 'Denied'): ?>
+                    <p class="status-message" style="color: red;">Your application has been denied. Please submit again.</p>
+                <?php else: ?>
+                    <h4>Application Status: <span style="font-weight: bold; color: blue;">In Progress</span></h4>
+                <?php endif; ?>
             </div>
+
             <div class="progress-container">
                 <h4>Application Progress</h4>
                 <div class="progress-item">
@@ -226,42 +180,45 @@ $applicationStatus = $statusRow['approval_status'] ?? 'Pending';
                     <p class="<?php echo $infoSecComplete ? 'completed' : 'incomplete'; ?>" style="color:<?php echo $familySecComplete ? 'green' : 'red'; ?>">
                         <?php echo $infoSecComplete ? 'Complete' : 'Incomplete'; ?>
                 </div>
+
                 <div class="progress-item">
                     <p>II. Family Composition:</p>
                     <p class="<?php echo $familySecComplete ? 'completed' : 'incomplete'; ?>" style="color:<?php echo $familySecComplete ? 'green' : 'red'; ?>">
                         <?php echo $familySecComplete ? 'Complete' : 'Incomplete'; ?>
                 </div>
+
                 <div class="progress-item">
                     <p>IV. Education / HR Profile:</p>
                     <p class="<?php echo $eduSecComplete ? 'completed' : 'incomplete'; ?>" style="color:<?php echo $familySecComplete ? 'green' : 'red'; ?>">
                         <?php echo $eduSecComplete ? 'Complete' : 'Incomplete'; ?>
                 </div>
+
                 <div class="progress-item">
                     <p>V. Economic Profile:</p>
                     <p class="<?php echo $ecoSecComplete ? 'completed' : 'incomplete'; ?>" style="color:<?php echo $familySecComplete ? 'green' : 'red'; ?>">
                         <?php echo $ecoSecComplete ? 'Complete' : 'Incomplete'; ?>
                 </div>
             </div>
+
             <div class="button-container">
-    <!-- Submit Application Button -->
-    <?php if ($applicationStatus === 'Denied' || $applicationStatus === 'Pending'): ?>
-        <a href="../ApplicationForm/info_sec.php" class="submit-btn">Submit Application</a>
-    <?php endif; ?>
-</div>
+                <!-- Submit Application Button -->
+                <?php if ($applicationStatus === 'Denied' || $applicationStatus === 'Pending'): ?>
+                    <a href="../ApplicationForm/info_sec.php" class="submit-btn">Submit Application</a>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
     <script>
-    function openDrawer() {
-        document.getElementById("drawer").style.width = "200px";
-        document.getElementById("main").style.marginLeft = "200";
+    function toggleDropdown() {
+        var dropdown = document.getElementById("dropdownMenu");
+        // Toggle dropdown visibility by changing display
+        if (dropdown.style.display === "block") {
+            dropdown.style.display = "none";
+        } else {
+            dropdown.style.display = "block";
+        }
     }
-
-    function closeDrawer() {
-        document.getElementById("drawer").style.width = "0";
-        document.getElementById("main").style.marginLeft = "00";
-    }
-    
     </script>
 </body>
 </html>
