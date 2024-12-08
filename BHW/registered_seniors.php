@@ -361,22 +361,6 @@ $total_pages = ceil($total_records / $records_per_page);
         </div>
     </div>
 </section>
-
-<!-- Modal for Viewing Data -->
-<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="viewModalLabel">Senior Citizen Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Details will be dynamically inserted here -->
-            </div>
-        </div>
-    </div>
-</div>
-
     <!-- JavaScript to Manage Popup and Save Logic -->
     <script>
 
@@ -422,7 +406,6 @@ dropdownItems.forEach(item => {
         dropdownMenu.classList.remove('show');
     });
 });
-
 
 // Function to filter the table as the user types in the search bar
 function filterTable() {
@@ -499,6 +482,59 @@ function filterTable() {
     // Initial fetch for page 1
     fetchPageData(currentPage);
 });
+
+// Listen for the status change
+document.querySelectorAll('.status').forEach(select => {
+    select.addEventListener('change', function () {
+        const status = this.value;
+        const profileId = this.getAttribute('data-parent-id');
+        
+        console.log(`Status changed: ${status}, Profile ID: ${profileId}`); // Debugging log
+
+        // If the status is 'Inactive', show the modal
+        if (status === 'Inactive') {
+            window.selectedProfileId = profileId; // Store the selected profile ID
+            document.getElementById('statusModal').style.display = 'block'; // Show modal
+        }
+    });
+});
+
+function submitFeedback() {
+    const feedback = document.getElementById('feedbackInput').value;
+
+    if (feedback.trim() === "") {
+        alert("Please provide a reason for setting the status to Inactive.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('status', 'Inactive');
+    formData.append('parent_id', window.selectedProfileId);
+    formData.append('comment', feedback); // Add feedback comment
+
+    // AJAX call to update status
+    fetch('update_stat.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        alert(data); // Show the response from PHP
+        if (data.includes('Status updated')) {
+            location.reload(); // Reload the page on success
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update status.');
+    });
+}
+
+// Close the modal
+function closeModal() {
+    document.getElementById('statusModal').style.display = 'none';
+}
+
 
 </script>
 </main>

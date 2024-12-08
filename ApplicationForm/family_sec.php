@@ -140,27 +140,27 @@ if ($recordExists) {
               <h2 class="font-weight-bold custom-name-form">ONLINE SENIOR CITIZEN DATA FORM</h2>
           </div>
       </div>
-      <div class="row mt-4">
-        <div class="col-md-12 custom-new-application">
-            <p class="text-danger custom-danger">New Application</p>
-            <p>
-                Please fill up completely and correctly the required information before each item below.  For items that are
-                not associated to you, leave it blank.  Required items are also marked with an asterisk (*) so please fill it up correctly.
-                Your honest response will help the National Commission of Senior Citizens (NCSC) come up with a good
-                information system of the senior citizens in the country as the basis of designing its programs and activities that will help improve the lives of Filipino older persons.</p>
+        <div class="row mt-4">
+            <div class="col-md-12 custom-new-application">
+                <p class="text-danger custom-danger">New Application</p>
+                <p>
+                    Please fill up completely and correctly the required information before each item below.  For items that are
+                    not associated to you, leave it blank.  Required items are also marked with an asterisk (*) so please fill it up correctly.
+                    Your honest response will help the National Commission of Senior Citizens (NCSC) come up with a good
+                    information system of the senior citizens in the country as the basis of designing its programs and activities that will help improve the lives of Filipino older persons.</p>
+            </div>
         </div>
-    </div>
 
         <!-- Index2 -->
         <form method="POST" action="family_sec.php" enctype="multipart/form-data">
-    <div class="mt-4">
-        <p class="bg-primary text-white p-2">II. FAMILY COMPOSITION</p>
-      </div>
-      <div class="before-form">
-        <p class="fs-2"><b>
-            21.  Name of your spouse</b>
-        </p>
-      </div>
+        <div class="mt-4">
+            <p class="bg-primary text-white p-2">II. FAMILY COMPOSITION</p>
+        </div>
+        <div class="before-form">
+            <p class="fs-2"><b>
+                21.  Name of your spouse</b>
+            </p>
+        </div>
         <div class="form-row">
             <div class="form-group col-md-3">
                 <label for="spouse_lastname">Lastname (Apelyido) *</label>
@@ -202,7 +202,7 @@ if ($recordExists) {
                     <label for="extension">Extension</label>
                 <input type="text" class="form-control" id="father_extension" name="father_extension" value="<?php echo htmlspecialchars($fam['father_extension'] ?? ''); ?>">
                 </div>
-
+                <div>
                 <div class="mother-TEXT">
                     <p class="fs-2"><b>
                         21.  Name of your Mother</b>
@@ -229,7 +229,8 @@ if ($recordExists) {
                 </div>
                 <button class="btn-next mt-3">Back</button>
                 <button type="submit" class="btn-next mt-3">Next</button>
-            </div>
+                </div>
+    </div>
    
 </form>
 

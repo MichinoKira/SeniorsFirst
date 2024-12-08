@@ -86,6 +86,61 @@ body {
     background-color: rgb(226, 14, 14);
     color: white;
 }
+.form-group label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Dropdown styling */
+.custom-dropdown {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: normal;
+    color: #555;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    appearance: none; /* Removes default browser styles */
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Dropdown hover and focus effects */
+.custom-dropdown:hover,
+.custom-dropdown:focus {
+    border-color: #007bff;
+    background-color: #e9f5ff;
+    color: #333;
+    outline: none;
+}
+
+/* Add a custom arrow to the dropdown */
+.custom-dropdown::after {
+    content: '▼'; /* Add down arrow */
+    font-size: 12px;
+    color: #555;
+    position: absolute;
+    right: 15px;
+    top: calc(50% - 6px); /* Center vertically */
+    pointer-events: none; /* Prevent interfering with click */
+}
+
+/* Disable default arrow on dropdown */
+select {
+    appearance: none;
+    -webkit-appearance: none; /* Safari */
+    -moz-appearance: none; /* Firefox */
+}
+
+/* Option styling */
+.custom-dropdown option {
+    padding: 10px;
+    font-size: 14px;
+}
 
 @media (max-width: 768px) {
     .profile-container {

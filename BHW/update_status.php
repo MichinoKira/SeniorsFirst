@@ -1,58 +1,64 @@
 <?php
-// Include the database configuration
+// Start the session and include the necessary files
+session_start();
 require_once '../db/db_config.php';
 
-// Check if the approval status and parent_id are received from the form
-if (isset($_POST['approval_status']) && isset($_POST['parent_id'])) {
-    $approval_status = $_POST['approval_status'];  // The new status from the dropdown
-    $parent_id = $_POST['parent_id'];  // The parent_id to identify which record to update
+// Check if the user is logged in and is a BHW
+if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'bhw') {
+    echo "Unauthorized access";
+    exit();
+}
 
-    // Debugging: Log received data
-    error_log("Received status: $approval_status, parent_id: $parent_id");
+// Get the logged-in BHW ID from the session
+$bhw_id = $_SESSION['username']; 
 
-    try {
-        // Prepare the SQL statement to update the user profile
-        $stmt = $pdo->prepare("UPDATE user_profile SET approval_status = :approval_status WHERE parent_id = :parent_id");
-        $stmt->bindParam(':approval_status', $approval_status, PDO::PARAM_STR);
-        $stmt->bindParam(':parent_id', $parent_id, PDO::PARAM_INT);
+try {
+    // Correct the variable name to be consistent: $bhw_id (case sensitivity)
+    $stmt = $pdo->prepare("SELECT bhw_id FROM bhw WHERE username = :username");
+    $stmt->bindParam(':username', $bhw_id, PDO::PARAM_STR);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Execute the query
-        if ($stmt->execute()) {
-            echo "Approval status updated successfully!";
-
-            // Activity logging for user approval status change
-            if (isset($_SESSION['username'])) {
-                try {
-                    // Prepare the SQL statement to insert activity into the log
-                    $logStmt = $pdo->prepare("INSERT INTO activity_log (bhw_id, action, timestamp) VALUES (:bhw_id, :action, NOW())");
-                    
-                    // Bind parameters
-                    $logStmt->bindParam(':bhw_id', $_SESSION['username']);  // Assuming username is stored in session
-                    $action = "Changed approval status of user to " . $approval_status;  // Define the action text
-                    $logStmt->bindParam(':action', $action);
-                    
-                    // Execute the query
-                    $logStmt->execute();
-                } catch (PDOException $e) {
-                    echo "Error logging activity: " . $e->getMessage();
-                    exit();
-                }
-            } else {
-                // Debugging: Log missing session data
-                error_log("Session username not set.");
-            }
-
-        } else {
-            echo "Failed to update approval status.";
-        }
-    } catch (PDOException $e) {
-        // Handle any error during the database operation
-        echo "Error: " . $e->getMessage();
+    if ($row) {
+        $bhw_id = $row['bhw_id'];  // Correct BHW ID fetched from the database
+    } else {
+        echo "BHW ID not found.";
+        exit();
     }
-} else {
-    // Debugging: Log missing data
-    error_log("Missing data for update. Status or parent_id not set.");
-    echo "Missing data for update.";
+} catch (PDOException $e) {
+    echo "Error fetching BHW ID: " . $e->getMessage();
+    exit();
+}
+
+// Get the approval status and profile_id (parent_id) from the POST data
+$approval_status = isset($_POST['approval_status']) ? $_POST['approval_status'] : '';
+$profile_id = isset($_POST['parent_id']) ? $_POST['parent_id'] : '';
+
+// Validate input
+if (empty($approval_status) || empty($profile_id)) {
+    echo "Missing approval status or profile ID.";
+    exit();
+}
+
+try {
+    // Step 1: Update the approval status in the user_profile table
+    $updateStmt = $pdo->prepare("UPDATE user_profile SET approval_status = :approval_status WHERE profile_id = :profile_id");
+    $updateStmt->bindParam(':approval_status', $approval_status);
+    $updateStmt->bindParam(':profile_id', $profile_id, PDO::PARAM_INT);
+    $updateStmt->execute();
+
+    // Step 2: Log the activity in the activity_log table
+    $action = "Changed approval status to " . $approval_status;
+    $logStmt = $pdo->prepare("INSERT INTO activity_log (bhw_id, profile_id, action) VALUES (:bhw_id, :profile_id, :action)");
+    $logStmt->bindParam(':bhw_id', $bhw_id, PDO::PARAM_INT);
+    $logStmt->bindParam(':profile_id', $profile_id, PDO::PARAM_INT);
+    $logStmt->bindParam(':action', $action, PDO::PARAM_STR); // Corrected to PDO::PARAM_STR
+    $logStmt->execute();
+
+    echo "Approval status updated and activity logged successfully.";
+
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
 }
 
 ?>

@@ -137,10 +137,10 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
                     <label for="age">Age</label>
                     <input type="text" id="age" name="age" class="form-control" value="<?php echo htmlspecialchars($profile['age'] ?? ''); ?>" readonly>
                 </div>
-
                 <div class="form-group">
                     <label for="gender">Gender</label>
-                    <select id="gender" name="gender" required>
+                    <select id="gender" name="gender" class="custom-dropdown">
+                        <option value="" disabled selected>Select Gender</option>
                         <option value="Male" <?php if (($profile['gender'] ?? '') == 'male') echo 'selected'; ?> >Male</option>
                         <option value="Female" <?php if (($profile['gender'] ?? '') == 'female') echo 'selected'; ?>>Female</option>
                     </select>
@@ -166,7 +166,10 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
                     <input type="varchar" id="zone" name="zone" class="form-control" value="<?php echo htmlspecialchars($profile['zone'] ?? ''); ?>" required>
                 </div>
 
-                <button type="submit" class="edit-button">Save Profile</button>
+                <div class="button-container text-center" id="button-container">
+                <button type="submit" class="btn btn-success btn-block" id="edit-btn">Save Profile</button>
+                <button href="../BHW/BHW-dashboard.php?edit=true" class="btn btn-danger" id="cancel-btn">Cancel</button>
+            </div>
 
             </form>
         <?php else: ?>
@@ -199,7 +202,7 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
                 <label>Email</label>
                 <input type="text" id="addtess" class="form-control" value="<?php echo htmlspecialchars(($profile['zone'] ?? '') . ' ' . ($profile['brgy'] ?? '') . ' ' . ($profile['city'] ?? '') . ' ' . ($profile['province'] ?? '')); ?>" readonly>
             </div>
-        <a href="../BHW/BHW_profile.php?edit=true" class="edit-button">Edit Profile</a>
+        <a href="../BHW/BHW_profile.php?edit=true" class="btn btn-success btn-block">Edit Profile</a>
         <?php endif; ?>
     </div>
 </body>
@@ -252,6 +255,35 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
                 dobField.addEventListener('input', autoCalculateAge);  // Attach event listener to DOB field
             }
         });
+    
+        document.getElementById("edit-btn").addEventListener("click", function() {
+            alert("Profile saved successfully!");
+            // Add logic to save data (e.g., send to server)
+
+            // Reset button states
+            toggleReadOnly(true);
+        });
+
+        const fileInput = document.getElementById('file-input');
+        const profileImg = document.getElementById('profile-img');
+        const cameraIcon = document.getElementById('camera-icon');
+
+        // Trigger file input when the camera icon is clicked
+        cameraIcon.addEventListener('click', function() {
+            fileInput.click();
+        });
+        // Handle file selection and update profile image
+        fileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profileImg.src = e.target.result;  // Update image source
+                };
+                reader.readAsDataURL(file);  // Read file as Data URL
+            }
+        });
+        
     </script>
 
 

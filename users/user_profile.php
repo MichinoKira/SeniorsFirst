@@ -203,7 +203,7 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
             
             <div class="button-container text-center" id="button-container">
                 <button type="submit" class="btn btn-success btn-block" id="edit-btn">Save Profile</button>
-                <button type="button" class="btn btn-danger" id="cancel-btn">Cancel</button>
+                <button href="../users/user_dashboard.php?edit=true" class="btn btn-danger" id="cancel-btn">Cancel</button>
             </div>
             
         </form>
@@ -247,6 +247,8 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
   
 </body>
 <script>
+        
+    
         // Function to calculate the age based on the date of birth
         function calculateAge(dob) {
             const today = new Date();
@@ -287,7 +289,8 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
                 }
             }
         }
-
+        
+        
         // Ensure the DOM is fully loaded before adding the event listener
         document.addEventListener('DOMContentLoaded', function() {
             const dobField = document.getElementById('dob');
@@ -296,9 +299,40 @@ $updated = isset($_GET['updated']) && $_GET['updated'] === 'true';
             }
         });
     
+        document.getElementById("edit-btn").addEventListener("click", function() {
+            alert("Profile saved successfully!");
+            // Add logic to save data (e.g., send to server)
+
+            // Reset button states
+            toggleReadOnly(true);
+        });
+
         document.getElementById("cancel-btn").addEventListener("click", function() {
             location.reload();  // Reload the page to reset changes
+        });;
+        
+        const fileInput = document.getElementById('file-input');
+        const profileImg = document.getElementById('profile-img');
+        const cameraIcon = document.getElementById('camera-icon');
+
+        // Trigger file input when the camera icon is clicked
+        cameraIcon.addEventListener('click', function() {
+            fileInput.click();
         });
+
+        // Handle file selection and update profile image
+        fileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profileImg.src = e.target.result;  // Update image source
+                };
+                reader.readAsDataURL(file);  // Read file as Data URL
+            }
+        });
+        
+    
     </script>
 
 

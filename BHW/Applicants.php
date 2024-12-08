@@ -77,25 +77,7 @@ try {
   exit;
 }
 
-
-
-// Activity logging for user approval status change
-if (isset($approval_status)) {
-  try {
-      $logStmt = $pdo->prepare("INSERT INTO activity_log (bhw_id, action) VALUES (:bhw_id, :action)");
-      $logStmt->bindParam(':bhw_id', $_SESSION['username']);
-      $action = "Changed approval status of user to " . $approval_status;
-      $logStmt->bindParam(':action', $action);
-      $logStmt->execute();
-  } catch (PDOException $e) {
-      echo "Error logging activity: " . $e->getMessage();
-      exit();
-  }
-}
 ?>
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -433,34 +415,29 @@ if (isset($approval_status)) {
     <!-- JavaScript to Manage Popup and Save Logic -->
     <script>
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Add event listener for dropdown changes
-    document.querySelectorAll('.approval_status').forEach(function (dropdown) {
-        dropdown.addEventListener('change', function () {
-            // Get the selected value and parent ID
-            const approvalStatus = this.value;
-            const parentId = this.getAttribute('data-parent-id');
 
-            // Send an AJAX POST request
-            fetch('update_status.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `approval_status=${approvalStatus}&parent_id=${parentId}`
-            })
-            .then(response => response.text())
-            .then(data => {
-                console.log(data); // Log server response
-                alert(data); // Optionally display a success message
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
+document.querySelectorAll('.approval_status').forEach(function (dropdown) {
+    dropdown.addEventListener('change', function () {
+        // Get the selected value and parent ID
+        const approvalStatus = this.value;
+        const parentId = this.getAttribute('data-parent-id');
+
+        // Send an AJAX POST request to update the status
+        fetch('update_status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `approval_status=${approvalStatus}&parent_id=${parentId}`
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);  // Log the response from the server
+            alert(data);  // Optionally show success message
+        })
+        .catch(error => console.error('Error:', error));
     });
 });
-
 
 
   const dropdownButton = document.querySelector('.dropdown-button');

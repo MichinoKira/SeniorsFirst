@@ -188,11 +188,11 @@ if ($recordExists) {
   
     <form method="POST" action="info_sec.php" enctype="multipart/form-data">
       <div class="form-row">
-          <div class="form-group col-md-2">
+          <div class="form-group col-md-3">
               <label for="lastname">Lastname (Apelyido) *</label>
               <input type="text" class="form-control" id="lastname" name="lastname" value="<?php echo htmlspecialchars($profile['lastname'] ?? ''); ?>" required>
           </div>
-          <div class="form-group col-md-2">
+          <div class="form-group col-md-3">
               <label for="firstname">Firstname (Pangalan) *</label>
               <input type="text" class="form-control" id="firstname" name="firstname" value="<?php echo htmlspecialchars($profile['firstname'] ?? ''); ?>" required>
           </div>
@@ -200,15 +200,7 @@ if ($recordExists) {
               <label for="middlename">Middlename (Gitnang Pangalan) *</label>
               <input type="text" class="form-control" id="middlename" name="middlename" value="<?php echo htmlspecialchars($profile['middlename'] ?? ''); ?>" required>
           </div>
-          <div class="form-group col-md-2">
-              <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="" id="extensionCheckbox">
-                  <label class="form-check-label" for="extensionCheckbox"  style="font-size: 10px;">
-                      Check if the registrant has a name extension
-                  </label>
-              </div>
-          </div>
-          <div class="form-group col-md-2">
+          <div class="form-group col-md-3">
               <label for="extension">Extension</label>
       <input type="text" class="form-control" id="extension" name="extension" value="<?php echo htmlspecialchars($profile['extension'] ?? ''); ?>">
           </div>
